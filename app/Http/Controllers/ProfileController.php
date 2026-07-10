@@ -42,7 +42,7 @@ class ProfileController extends Controller
     {
         $user = Auth::user();
 
-        return view('dashboard.client.profile', compact('user'));
+        return view('dashboard.client.index', compact('user'));
     }
 
     public function updateClientProfile(Request $request)
