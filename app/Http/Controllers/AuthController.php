@@ -65,14 +65,14 @@ class AuthController extends Controller
     }
 
     private function redirectBasedOnRole($role)
-    {
-        return match ($role) {
-            'administrateur' => 'admin.dashboard',
-            'livreur' => 'livreur.dashboard',
-            'client' => 'client.dashboard',
-            default => 'login',
-        };
-    }
+{
+    return match ($role) {
+        'administrateur' => 'admin.dashboard',
+        'livreur' => 'livreur.dashboard',
+        'client' => 'client.dashboard',
+        default => 'login.page', // et non 'login'
+    };
+}
 
 
     public function redirectToGoogle()
