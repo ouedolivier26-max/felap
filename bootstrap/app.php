@@ -15,9 +15,9 @@ return Application::configure(basePath: dirname(__DIR__))
     )
     ->withMiddleware(function (Middleware $middleware): void {
         $middleware->alias([
-            'isClient'  => IsClient::class,
-            'isLivreur' => IsLivreur::class,
-            'isAdmin'   => IsAdmin::class,
+            'IsClient'  => IsClient::class,
+            'IsLivreur' => IsLivreur::class,
+            'IsAdmin'   => IsAdmin::class,
         ]);
     })
     ->withExceptions(function (Exceptions $exceptions): void {
