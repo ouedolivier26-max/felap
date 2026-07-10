@@ -110,7 +110,7 @@ Route::middleware(['auth', 'isLivreur'])->prefix('livreur')->name('livreur.')->g
 |--------------------------------------------------------------------------
 */
 Route::middleware(['auth', 'isClient'])->prefix('client')->name('client.')->group(function () {
-    Route::get('/dashboard.client.profile', [ClientController::class, 'index'])->name('dashboard');
+    Route::get('/dashboard', [ClientController::class, 'index'])->name('dashboard');
 
     Route::get('/notifications', [NotificationsController::class, 'index'])->name('notifications');
     Route::post('/notifications/{notification}/lu', [NotificationsController::class, 'lireNotification'])->name('notifications.lu');
@@ -136,7 +136,7 @@ Route::middleware(['auth', 'isClient'])->prefix('client')->name('client.')->grou
 */
 Route::middleware('guest')->group(function () {
     Route::get('forgot-password', function () {
-        return view('auth.password-request');
+        return view('auth.password request');
     })->name('password.request');
 
     Route::post('forgot-password', function (Request $request) {
@@ -152,7 +152,7 @@ Route::middleware('guest')->group(function () {
     })->middleware('throttle:6,1')->name('password.email');
 
     Route::get('reset-password/{token}', function (string $token) {
-        return view('auth.password-reset', [
+        return view('auth.password reset', [
             'token' => $token,
             'email' => request('email'),
         ]);
