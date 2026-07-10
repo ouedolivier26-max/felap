@@ -52,7 +52,7 @@ Route::post('/logout', [AuthController::class, 'logout'])->middleware('auth')->n
 | Espace Admin
 |--------------------------------------------------------------------------
 */
-Route::middleware(['auth', 'isAdmin'])->prefix('admin')->name('admin.')->group(function () {
+Route::middleware(['auth', 'IsAdmin'])->prefix('admin')->name('admin.')->group(function () {
     Route::get('/dashboard', [AdminController::class, 'index'])->name('dashboard');
 
     Route::get('/commandes', [CommandesController::class, 'viewCommandesAdminPage'])->name('commandes');
@@ -77,7 +77,7 @@ Route::middleware(['auth', 'isAdmin'])->prefix('admin')->name('admin.')->group(f
 | Espace Livreur
 |--------------------------------------------------------------------------
 */
-Route::middleware(['auth', 'isLivreur'])->prefix('livreur')->name('livreur.')->group(function () {
+Route::middleware(['auth', 'IsLivreur'])->prefix('livreur')->name('livreur.')->group(function () {
     Route::get('/dashboard', [LivreurController::class, 'index'])->name('dashboard');
 
     Route::get('/commandes', [CommandesController::class, 'viewCommandesLivreurPage'])->name('commandes');
@@ -109,7 +109,7 @@ Route::middleware(['auth', 'isLivreur'])->prefix('livreur')->name('livreur.')->g
 | Espace Client
 |--------------------------------------------------------------------------
 */
-Route::middleware(['auth', 'isClient'])->prefix('client')->name('client.')->group(function () {
+Route::middleware(['auth', 'IsClient'])->prefix('client')->name('client.')->group(function () {
     Route::get('/dashboard.client.profile', [ClientController::class, 'index'])->name('dashboard');
 
     Route::get('/notifications', [NotificationsController::class, 'index'])->name('notifications');
