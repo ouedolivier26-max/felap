@@ -110,7 +110,7 @@ Route::middleware(['auth', 'isLivreur'])->prefix('livreur')->name('livreur.')->g
 |--------------------------------------------------------------------------
 */
 Route::middleware(['auth', 'isClient'])->prefix('client')->name('client.')->group(function () {
-    Route::get('/dashboard', [ClientController::class, 'index'])->name('dashboard');
+    Route::get('/dashboard.client.profile', [ClientController::class, 'index'])->name('dashboard');
 
     Route::get('/notifications', [NotificationsController::class, 'index'])->name('notifications');
     Route::post('/notifications/{notification}/lu', [NotificationsController::class, 'lireNotification'])->name('notifications.lu');
