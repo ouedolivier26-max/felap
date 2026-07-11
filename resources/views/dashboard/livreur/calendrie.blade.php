@@ -1,128 +1,92 @@
 @extends('layout.master')
 @section('main')
-<div class="overflow-auto flex-1 bg-white">
-
-    <div class="p-4 mx-auto max-w-7xl lg:p-8">
-        <div class="flex flex-col justify-between items-start md:flex-row md:items-center">
+<div class="flex-1 overflow-auto bg-gray-50 px-4 py-4 sm:px-6 lg:px-8">
+    <div class="mx-auto max-w-7xl rounded-2xl border border-gray-200 bg-white p-5 shadow-sm sm:p-6 lg:p-8">
+        <div class="mb-6 flex flex-col gap-4 rounded-2xl border border-gray-200 bg-gray-50 p-4 sm:flex-row sm:items-center sm:justify-between">
             <div>
-                <h1 class="text-2xl font-bold text-gray-800">Rendez-vous de Livraison</h1>
-                <p class="mt-1 text-gray-600">Gérer vos rendez-vous de livraison</p>
+                <h1 class="text-2xl font-semibold text-gray-800">Rendez-vous de livraison</h1>
+                <p class="mt-1 text-sm text-gray-600">Gérer vos rendez-vous de livraison</p>
             </div>
-        </div>
-    </div>
-    <div class="border-b-2"></div>
-
-    <div class="p-4 pt-6 mx-auto max-w-7xl bg-white">
-
-        <div class="flex justify-end mt-4 mb-8">
-            <button onclick="openModalAjoutLivraison()" class="flex gap-2 justify-center items-center px-4 py-2 w-full text-sm font-medium text-white bg-gradient-to-b from-gray-900 rounded-md transition-colors sm:w-auto to-gray-950 hover:from-gray-950 hover:to-black">
+            <button onclick="openModalAjoutLivraison()" class="inline-flex items-center justify-center gap-2 rounded-xl bg-gray-900 px-4 py-2.5 text-sm font-semibold text-white transition hover:bg-black">
                 <i class="fas fa-plus"></i>
                 Nouveau rendez-vous
             </button>
         </div>
 
-        {{-- ---------------------------------  Liste des rendez vous de Livraison -------------------------------- --}}
         <div class="grid grid-cols-1 gap-4 md:grid-cols-2 lg:grid-cols-3">
-         @forelse($colisLivraison as $rdv)
-            <div class="px-4 py-6 bg-white rounded-lg border border-gray-200 shadow-sm">
-                <div class="flex justify-between items-start mb-6">
-                    <div>
-                        <span class="text-sm font-medium text-gray-900<">Colis ID : {{$rdv->colie_number}}</span>
-                        <p class="text-sm text-gray-600">Client - {{$rdv->commande->client->utilisateur->name}}</p>
-                    </div>
+            @forelse($colisLivraison as $rdv)
+            <div class="rounded-2xl border border-gray-200 bg-white p-5 shadow-sm">
+                <div class="mb-5">
+                    <span class="text-sm font-semibold text-gray-900">Colis ID : {{ $rdv->colie_number }}</span>
+                    <p class="mt-1 text-sm text-gray-600">Client - {{ $rdv->commande->client->utilisateur->name }}</p>
                 </div>
-                
+
                 <div class="space-y-3">
                     <div class="flex items-center text-sm text-gray-600">
                         <i class="mr-2 far fa-calendar"></i>
-                        <span>{{ \Carbon\Carbon::parse($rdv->date_sortie)->format('d/m/Y')}}</span>
+                        <span>{{ \Carbon\Carbon::parse($rdv->date_sortie)->format('d/m/Y') }}</span>
                     </div>
                     <div class="flex items-center text-sm text-gray-600">
                         <i class="mr-2 far fa-clock"></i>
-                        <span>{{ \Carbon\Carbon::parse($rdv->heure_sortie)->format('H:i')}}</span>
+                        <span>{{ \Carbon\Carbon::parse($rdv->heure_sortie)->format('H:i') }}</span>
                     </div>
                     <div class="flex items-center text-sm text-gray-600">
                         <i class="mr-2 fas fa-map-marker-alt"></i>
-                        <span>{{$rdv->commande->client->utilisateur->adresse}}</span>
+                        <span>{{ $rdv->commande->client->utilisateur->adresse }}</span>
                     </div>
-                </div>          
+                </div>
             </div>
-               @empty
-                 <div class="text-gray-500 text-left p-4">
-                     Aucun rendez-vous de livraison pour le moment.
-                 </div>
-            @endforelse  
+            @empty
+            <div class="rounded-2xl border border-dashed border-gray-300 bg-gray-50 p-6 text-left text-gray-500 md:col-span-2 lg:col-span-3">
+                Aucun rendez-vous de livraison pour le moment.
+            </div>
+            @endforelse
         </div>
     </div>
 </div>
 
-{{--  ---------------------------------  Modal Ajoute Rendez vous pour la livraison ---------------------------------- --}}
-<div id="ajoutLivraisonModal" class="hidden fixed inset-0 z-50 justify-center items-center p-4 bg-black bg-opacity-50">
- <div class="bg-white rounded-md shadow-lg w-full max-w-xl max-h-[90vh] overflow-y-auto">
-     <div class="flex sticky top-0 z-10 justify-between items-center px-4 py-3 bg-white border-b sm:px-6">
-         <h2 class="text-base font-medium sm:text-lg">Ajouter un rendez-vous de livraison</h2>
-         <button onclick="closeModalAjoutLivraison()" class="text-gray-500 hover:text-gray-700">
-             <i class="text-2xl ri-close-line"></i>
-         </button>
-     </div>
-     
-     <div class="p-4 sm:p-6">
-         <form action="{{ route('livreur.rendez-vous.store') }}" method="POST">
-             @csrf
-             <div class="space-y-4">
-                 <div>
-                     <label class="block mb-1 text-sm text-gray-700">Colis à livrer</label>
-                     <select name="colis_id" required class="px-4 py-2 w-full text-sm text-gray-600 bg-transparent rounded-md border border-gray-200 shadow-sm transition duration-300 placeholder:text-gray-400 ease focus:outline-none focus:border-gray-400 hover:border-gray-300 focus:shadow">
-                         <option value="">Sélectionner un colis</option>
-                         @foreach($colis as $colie)
-                             <option value="{{ $colie->id }}">
-                                 {{ $colie->colie_number }} - {{ $colie->commande->client->utilisateur->name }} 
-                             </option>
-                         @endforeach
-                     </select>
-                 </div>
-                 
-                 <div>
-                     <label class="block mb-1 text-sm text-gray-700">Date de livraison</label>
-                     <input
-                         type="date"
-                         name="date_sortie"
-                         required
-                         class="px-4 py-2 w-full text-sm text-gray-600 bg-transparent rounded-md border border-gray-200 shadow-sm transition duration-300 placeholder:text-gray-400 ease focus:outline-none focus:border-gray-400 hover:border-gray-300 focus:shadow"
-                     >
-                 </div>
-                 
-                 <div>
-                     <label class="block mb-1 text-sm text-gray-700">Heure de livraison</label>
-                     <input
-                         type="time"
-                         name="heure_sortie"
-                         required
-                         class="px-4 py-2 w-full text-sm text-gray-600 bg-transparent rounded-md border border-gray-200 shadow-sm transition duration-300 placeholder:text-gray-400 ease focus:outline-none focus:border-gray-400 hover:border-gray-300 focus:shadow"
-                     >
-                 </div>
-             </div>
-             
-             <div class="flex flex-col gap-2 justify-end mt-6 sm:flex-row sm:gap-3">
-                 <button
-                     type="button"
-                     onclick="closeModalAjoutLivraison()"
-                     class="px-4 py-2 w-full text-sm text-gray-700 rounded-md sm:w-auto hover:bg-gray-100"
-                 >
-                     Annuler
-                 </button>
-                 <button
-                     type="submit"
-                     class="px-4 py-2 w-full text-sm text-white bg-gradient-to-b from-gray-900 rounded-md sm:w-auto to-gray-950 hover:from-gray-950 hover:to-black"
-                 >
-                     Enregistrer
-                 </button>
-             </div>
-         </form>
-     </div>
- </div>
-</div>
+<div id="ajoutLivraisonModal" class="hidden fixed inset-0 z-50 items-center justify-center bg-black bg-opacity-50 p-4">
+    <div class="max-h-[90vh] w-full max-w-xl overflow-y-auto rounded-2xl bg-white shadow-lg">
+        <div class="sticky top-0 z-10 flex items-center justify-between border-b bg-white px-4 py-3 sm:px-6">
+            <h2 class="text-base font-semibold sm:text-lg">Ajouter un rendez-vous de livraison</h2>
+            <button onclick="closeModalAjoutLivraison()" class="text-gray-500 hover:text-gray-700">
+                <i class="text-2xl ri-close-line"></i>
+            </button>
+        </div>
 
+        <div class="p-4 sm:p-6">
+            <form action="{{ route('livreur.rendez-vous.store') }}" method="POST">
+                @csrf
+                <div class="space-y-4">
+                    <div>
+                        <label class="mb-1 block text-sm text-gray-700">Colis à livrer</label>
+                        <select name="colis_id" required class="w-full rounded-xl border border-gray-200 bg-gray-50 px-4 py-2.5 text-sm text-gray-600 shadow-sm outline-none transition focus:border-gray-400 focus:bg-white">
+                            <option value="">Sélectionner un colis</option>
+                            @foreach($colis as $colie)
+                                <option value="{{ $colie->id }}">{{ $colie->colie_number }} - {{ $colie->commande->client->utilisateur->name }}</option>
+                            @endforeach
+                        </select>
+                    </div>
+
+                    <div>
+                        <label class="mb-1 block text-sm text-gray-700">Date de livraison</label>
+                        <input type="date" name="date_sortie" required class="w-full rounded-xl border border-gray-200 bg-gray-50 px-4 py-2.5 text-sm text-gray-600 shadow-sm outline-none transition focus:border-gray-400 focus:bg-white">
+                    </div>
+
+                    <div>
+                        <label class="mb-1 block text-sm text-gray-700">Heure de livraison</label>
+                        <input type="time" name="heure_sortie" required class="w-full rounded-xl border border-gray-200 bg-gray-50 px-4 py-2.5 text-sm text-gray-600 shadow-sm outline-none transition focus:border-gray-400 focus:bg-white">
+                    </div>
+                </div>
+
+                <div class="mt-6 flex flex-col justify-end gap-2 sm:flex-row sm:gap-3">
+                    <button type="button" onclick="closeModalAjoutLivraison()" class="w-full rounded-xl px-4 py-2.5 text-sm text-gray-700 transition hover:bg-gray-100 sm:w-auto">Annuler</button>
+                    <button type="submit" class="w-full rounded-xl bg-gray-900 px-4 py-2.5 text-sm font-semibold text-white transition hover:bg-black sm:w-auto">Enregistrer</button>
+                </div>
+            </form>
+        </div>
+    </div>
+</div>
 @endsection
 
 @section('toast')   

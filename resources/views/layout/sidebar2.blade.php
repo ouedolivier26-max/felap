@@ -48,7 +48,7 @@
         <span>Colis</span>
       </a>
       
-      <a href="{{route('livreur.calendrie')}}" 
+      <a href="{{ route('livreur.calendrier') }}"
          class="flex gap-3 items-center px-6 py-3 m-2 text-gray-300 rounded-md hover:bg-[#0d0d0d] hover:text-white">
         <i class="fas fa-calendar-days"></i>
         <span>Date Livraison</span>

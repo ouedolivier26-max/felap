@@ -1,203 +1,185 @@
 @extends('layout.master')
 @section('main')
-    <div class="w-full md:w-[calc(100%-260px)] px-4 sm:px-5 flex-1 overflow-x-hidden">
-        <header class="flex flex-wrap gap-4 justify-between items-center p-4 mt-2">
-            <div>
-                <h1 class="text-2xl sm:text-3xl font-bold text-gray-800">Tableau de bord</h1>
-                <p class="text-sm text-gray-500">{{ \Carbon\Carbon::now()->format('D, d M, Y, h:i A') }}</p>
-            </div>
+    <div class="w-full flex-1 overflow-x-hidden bg-gray-50 px-4 sm:px-5">
+        <div class="mx-auto max-w-7xl rounded-2xl border border-gray-200 bg-white p-5 shadow-sm sm:p-6 lg:p-8">
+            <header class="mb-6 flex flex-col gap-4 rounded-2xl border border-gray-200 bg-gray-50 p-4 sm:flex-row sm:items-center sm:justify-between">
+                <div>
+                    <h1 class="text-2xl font-semibold text-gray-800 sm:text-3xl">Tableau de bord</h1>
+                    <p class="mt-1 text-sm text-gray-500">{{ \Carbon\Carbon::now()->format('D, d M, Y, h:i A') }}</p>
+                </div>
 
-            <div class="flex items-center space-x-4">
-                <div class="relative">
-                    <button id="notificationButton" class="relative p-2 text-gray-500 hover:text-gray-700"
-                        onclick="toggleNotificationModal()">
-                        <i class="text-xl fas fa-bell"></i>
-                        @if ($notifications && $notifications->count() > 0)
-                            <span
-                                class="absolute top-0 right-0 flex h-4 w-4 items-center justify-center rounded-full bg-red-500 text-[10px] text-white">{{ $notifications->count() }}</span>
-                        @endif
-                    </button>
-                    {{-- ----------------------------------- modal notifications -------------------------------- --}}
-                    <div id="notificationModal"
-                        class="hidden overflow-hidden absolute right-0 z-50 mt-2 w-[90vw] max-w-80 bg-white rounded-md shadow-lg"
-                        style="max-height: 400px; overflow-y: auto;">
-                        <div class="px-3 py-2 bg-gray-100 border-b border-gray-200">
-                            <div class="flex justify-between items-center">
-                                <h3 class="text-sm font-semibold text-gray-800">Notifications</h3>
-                                <a href="{{ route('admin.notifications') }}"
-                                    class="text-xs font-medium text-gray-700 hover:text-black">Voir tout</a>
-                            </div>
-                        </div>
-                        <div class="divide-y divide-gray-100">
+                <div class="flex items-center gap-4">
+                    <div class="relative">
+                        <button id="notificationButton" class="relative rounded-full p-2 text-gray-500 transition hover:bg-gray-100 hover:text-gray-700"
+                            onclick="toggleNotificationModal()">
+                            <i class="text-xl fas fa-bell"></i>
                             @if ($notifications && $notifications->count() > 0)
-                                @foreach ($notifications as $notification)
-                                    <div class="px-4 py-3 transition duration-150 ease-in-out hover:bg-gray-50">
-                                        <div class="flex items-start">
-                                            <div class="flex-1 min-w-0">
-                                                <p class="text-sm font-medium text-gray-900">{{ $notification->titre }}</p>
-                                                <p class="text-xs text-gray-500 truncate">{{ $notification->message }}</p>
-                                                <p class="mt-1 text-xs text-gray-400">
-                                                    {{ $notification->created_at->diffForHumans() }}</p>
+                                <span class="absolute right-0 top-0 flex h-4 w-4 items-center justify-center rounded-full bg-red-500 text-[10px] text-white">{{ $notifications->count() }}</span>
+                            @endif
+                        </button>
+                        <div id="notificationModal" class="absolute right-0 z-50 mt-2 hidden w-[90vw] max-w-80 overflow-hidden rounded-2xl border border-gray-200 bg-white shadow-lg" style="max-height: 400px; overflow-y: auto;">
+                            <div class="border-b border-gray-200 bg-gray-50 px-3 py-2">
+                                <div class="flex items-center justify-between">
+                                    <h3 class="text-sm font-semibold text-gray-800">Notifications</h3>
+                                    <a href="{{ route('admin.notifications') }}" class="text-xs font-medium text-gray-700 hover:text-black">Voir tout</a>
+                                </div>
+                            </div>
+                            <div class="divide-y divide-gray-100">
+                                @if ($notifications && $notifications->count() > 0)
+                                    @foreach ($notifications as $notification)
+                                        <div class="px-4 py-3 transition duration-150 ease-in-out hover:bg-gray-50">
+                                            <div class="flex items-start">
+                                                <div class="min-w-0 flex-1">
+                                                    <p class="text-sm font-medium text-gray-900">{{ $notification->titre }}</p>
+                                                    <p class="truncate text-xs text-gray-500">{{ $notification->message }}</p>
+                                                    <p class="mt-1 text-xs text-gray-400">{{ $notification->created_at->diffForHumans() }}</p>
+                                                </div>
                                             </div>
                                         </div>
+                                    @endforeach
+                                @else
+                                    <div class="px-4 py-6 text-center">
+                                        <p class="text-sm text-gray-500">Aucune notification</p>
                                     </div>
-                                @endforeach
-                            @else
-                                <div class="px-4 py-6 text-center">
-                                    <p class="text-sm text-gray-500">Aucune notification</p>
+                                @endif
+                            </div>
+                            @if ($notifications && $notifications->count() > 0)
+                                <div class="border-t border-gray-100 bg-gray-50 p-2">
+                                    <form action="{{ route('admin.notifications.all-lu') }}" method="POST">
+                                        @csrf
+                                        <button type="submit" class="w-full rounded-xl border border-gray-200 bg-white px-3 py-2 text-center text-xs font-medium text-gray-800 transition hover:bg-gray-100">
+                                            Tout marquer comme lu
+                                        </button>
+                                    </form>
                                 </div>
                             @endif
                         </div>
-                        @if ($notifications && $notifications->count() > 0)
-                            <div class="p-2 bg-gray-50 border-t border-gray-100">
-                                <form action="{{ route('admin.notifications.all-lu') }}" method="POST">
-                                    @csrf
-                                    <button type="submit"
-                                        class="px-3 py-2 w-full text-xs font-medium text-center bg-gradient-to-b from-gray-100 to-gray-200 rounded border border-gray-200 text-gray-950 hover:from-gray-200 hover:to-gray-300">
-                                        Tout marquer comme lu
-                                    </button>
-                                </form>
-                            </div>
-                        @endif
-                    </div>
-                </div>
-
-                <div class="flex gap-3 items-center">
-                    <div class="hidden text-right sm:block">
-                        <p class="text-sm font-medium">{{ $user->name }}</p>
-                        <p class="text-xs text-gray-500">Administrateur</p>
-                    </div>
-                    <div class="overflow-hidden flex-shrink-0 w-10 h-10 bg-gray-200 rounded-full">
-                        <img src="{{ asset('storage/' . $user->photo) }}" alt="profile" class="object-cover w-full h-full" />
-                    </div>
-                </div>
-            </div>
-        </header>
-
-        {{--  ----------------------------------- Statistiques ------------------------------------ --}}
-        <div class="grid grid-cols-1 gap-4 my-6 mt-6 mb-10 sm:grid-cols-2 xl:grid-cols-4 md:gap-6">
-            <div class="p-5 bg-white rounded-lg shadow-sm min-w-0">
-                <div class="flex justify-between items-center mb-2">
-                    <span class="text-sm text-gray-600">Commande livrée</span>
-                    <span class="px-2 py-1 text-xs bg-gray-100 rounded whitespace-nowrap">Aujourd'hui</span>
-                </div>
-                <div class="mb-4 h-px bg-gray-200"></div>
-                <div class="flex justify-between items-center mb-4">
-                    <span class="text-2xl font-bold">{{ $todayDeliveredColis }}</span>
-                    <span class="flex items-center text-sm text-green-700">
-                        <i class="mr-1 fas fa-arrow-up"></i>2.5%
-                    </span>
-                </div>
-                <div class="flex justify-between items-center">
-                    <span class="text-sm text-gray-600 truncate">{{ $monthlyDeliveredColis }} commande</span>
-                    <span class="px-2 py-1 text-xs bg-gray-100 rounded whitespace-nowrap">ce-mois-ci</span>
-                </div>
-            </div>
-
-            <div class="p-5 bg-white rounded-lg shadow-sm min-w-0">
-                <div class="flex justify-between items-center mb-2">
-                    <span class="text-sm text-gray-600">Commande en Livraison</span>
-                    <span class="px-2 py-1 text-xs bg-gray-100 rounded whitespace-nowrap">Aujourd'hui</span>
-                </div>
-                <div class="mb-4 h-px bg-gray-200"></div>
-                <div class="flex justify-between items-center mb-4">
-                    <span class="text-2xl font-bold">{{ $todayColisInDelivery }}</span>
-                    <span class="flex items-center text-sm text-green-700">
-                        <i class="mr-1 fas fa-arrow-up"></i>2.5%
-                    </span>
-                </div>
-                <div class="flex justify-between items-center">
-                    <span class="text-sm text-gray-600 truncate">{{ $monthlyColisInDelivery }} commande</span>
-                    <span class="px-2 py-1 text-xs bg-gray-100 rounded whitespace-nowrap">ce-mois-ci</span>
-                </div>
-            </div>
-
-            <div class="p-5 bg-white rounded-lg shadow-sm min-w-0">
-                <div class="flex justify-between items-center mb-2">
-                    <span class="text-sm text-gray-600">Total Commande</span>
-                    <span class="px-2 py-1 text-xs bg-gray-100 rounded whitespace-nowrap">Aujourd'hui</span>
-                </div>
-                <div class="mb-4 h-px bg-gray-200"></div>
-                <div class="flex justify-between items-center mb-4">
-                    <span class="text-2xl font-bold">{{ $todayTotalOrders }}</span>
-                    <span class="flex items-center text-sm text-green-700">
-                        <i class="mr-1 fas fa-arrow-up"></i>2.5%
-                    </span>
-                </div>
-                <div class="flex justify-between items-center">
-                    <span class="text-sm text-gray-600 truncate">{{ $monthlyTotalOrders }} commande</span>
-                    <span class="px-2 py-1 text-xs bg-gray-100 rounded whitespace-nowrap">ce-mois-ci</span>
-                </div>
-            </div>
-
-            <div class="p-5 bg-white rounded-lg shadow-sm min-w-0">
-                <div class="flex justify-between items-center mb-2">
-                    <span class="text-sm text-gray-600">Total Revenus</span>
-                    <span class="px-2 py-1 text-xs bg-gray-100 rounded whitespace-nowrap">Aujourd'hui</span>
-                </div>
-                <div class="mb-4 h-px bg-gray-200"></div>
-                <div class="flex justify-between items-center mb-4">
-                    <span class="text-xl sm:text-2xl font-bold truncate">{{ number_format($todayRevenue, 2) }} DH</span>
-                    <span class="flex items-center text-sm text-green-700 flex-shrink-0">
-                        <i class="mr-1 fas fa-arrow-up"></i>2.5%
-                    </span>
-                </div>
-                <div class="flex justify-between items-center">
-                    <span class="text-sm text-gray-600 truncate">{{ number_format($monthlyRevenue, 2) }} DH</span>
-                    <span class="px-2 py-1 text-xs bg-gray-100 rounded whitespace-nowrap">ce-mois-ci</span>
-                </div>
-            </div>
-        </div>
-
-        <div class="flex flex-col gap-6 lg:flex-row">
-            <div class="p-6 w-full bg-white rounded-lg shadow lg:w-1/2 min-w-0">
-                <h2 class="mb-6 font-medium text-gray-700">Répartition des revenus par ville</h2>
-                <div class="flex flex-col justify-center items-center">
-                    <div class="relative w-40 h-40 sm:w-48 sm:h-48">
-                        @if (count($revenusParVille ?? []) > 0)
-                            <canvas id="doughnutChart" width="192" height="192"></canvas>
-                            <div class="flex absolute inset-0 flex-col justify-center items-center pointer-events-none">
-                                <span class="text-xs text-gray-500 sm:text-sm">Total Revenus</span>
-                                <span class="text-lg font-bold text-gray-800 sm:text-2xl">
-                                    {{ number_format(collect($revenusParVille)->sum('total'), 0) }} DH
-                                </span>
-                            </div>
-                        @else
-                            <div class="flex justify-center items-center w-full h-full text-sm text-center text-gray-400 rounded-full border-2 border-gray-100">
-                                Aucune donnée pour l'instant
-                            </div>
-                        @endif
                     </div>
 
-                    @if (count($revenusParVille ?? []) > 0)
-                        <div class="flex flex-wrap gap-x-6 gap-y-2 justify-center items-center mt-6 w-full">
-                            @foreach ($revenusParVille as $index => $item)
-                                <div class="flex items-center">
-                                    <span class="inline-block flex-shrink-0 mr-2 w-3 h-3 rounded-full"
-                                        style="background-color: {{ ['#000000', '#4B5563', '#9CA3AF', '#D1D5DB', '#111827', '#6B7280'][$index % 6] }}"></span>
-                                    <span class="mr-1 text-sm text-gray-600 truncate max-w-[120px]">{{ $item->ville }}</span>
-                                </div>
-                            @endforeach
+                    <div class="flex items-center gap-3">
+                        <div class="hidden text-right sm:block">
+                            <p class="text-sm font-medium text-gray-800">{{ $user->name }}</p>
+                            <p class="text-xs text-gray-500">Administrateur</p>
                         </div>
-                    @endif
+                        <div class="flex h-10 w-10 flex-shrink-0 items-center justify-center overflow-hidden rounded-full bg-gray-200">
+                            <img src="{{ asset('storage/' . $user->photo) }}" alt="profile" class="h-full w-full object-cover" />
+                        </div>
+                    </div>
+                </div>
+            </header>
+
+            <div class="mb-10 mt-6 grid grid-cols-1 gap-4 sm:grid-cols-2 md:gap-6 xl:grid-cols-4">
+                <div class="min-w-0 rounded-2xl border border-gray-200 bg-white p-5 shadow-sm">
+                    <div class="mb-2 flex items-center justify-between">
+                        <span class="text-sm text-gray-600">Commande livrée</span>
+                        <span class="whitespace-nowrap rounded-full bg-gray-100 px-2 py-1 text-xs text-gray-600">Aujourd'hui</span>
+                    </div>
+                    <div class="mb-4 h-px bg-gray-200"></div>
+                    <div class="mb-4 flex items-center justify-between">
+                        <span class="text-2xl font-bold text-gray-800">{{ $todayDeliveredColis }}</span>
+                        <span class="flex items-center text-sm text-green-700"><i class="mr-1 fas fa-arrow-up"></i>2.5%</span>
+                    </div>
+                    <div class="flex items-center justify-between">
+                        <span class="truncate text-sm text-gray-600">{{ $monthlyDeliveredColis }} commande</span>
+                        <span class="whitespace-nowrap rounded-full bg-gray-100 px-2 py-1 text-xs text-gray-600">ce-mois-ci</span>
+                    </div>
+                </div>
+
+                <div class="min-w-0 rounded-2xl border border-gray-200 bg-white p-5 shadow-sm">
+                    <div class="mb-2 flex items-center justify-between">
+                        <span class="text-sm text-gray-600">Commande en Livraison</span>
+                        <span class="whitespace-nowrap rounded-full bg-gray-100 px-2 py-1 text-xs text-gray-600">Aujourd'hui</span>
+                    </div>
+                    <div class="mb-4 h-px bg-gray-200"></div>
+                    <div class="mb-4 flex items-center justify-between">
+                        <span class="text-2xl font-bold text-gray-800">{{ $todayColisInDelivery }}</span>
+                        <span class="flex items-center text-sm text-green-700"><i class="mr-1 fas fa-arrow-up"></i>2.5%</span>
+                    </div>
+                    <div class="flex items-center justify-between">
+                        <span class="truncate text-sm text-gray-600">{{ $monthlyColisInDelivery }} commande</span>
+                        <span class="whitespace-nowrap rounded-full bg-gray-100 px-2 py-1 text-xs text-gray-600">ce-mois-ci</span>
+                    </div>
+                </div>
+
+                <div class="min-w-0 rounded-2xl border border-gray-200 bg-white p-5 shadow-sm">
+                    <div class="mb-2 flex items-center justify-between">
+                        <span class="text-sm text-gray-600">Total Commande</span>
+                        <span class="whitespace-nowrap rounded-full bg-gray-100 px-2 py-1 text-xs text-gray-600">Aujourd'hui</span>
+                    </div>
+                    <div class="mb-4 h-px bg-gray-200"></div>
+                    <div class="mb-4 flex items-center justify-between">
+                        <span class="text-2xl font-bold text-gray-800">{{ $todayTotalOrders }}</span>
+                        <span class="flex items-center text-sm text-green-700"><i class="mr-1 fas fa-arrow-up"></i>2.5%</span>
+                    </div>
+                    <div class="flex items-center justify-between">
+                        <span class="truncate text-sm text-gray-600">{{ $monthlyTotalOrders }} commande</span>
+                        <span class="whitespace-nowrap rounded-full bg-gray-100 px-2 py-1 text-xs text-gray-600">ce-mois-ci</span>
+                    </div>
+                </div>
+
+                <div class="min-w-0 rounded-2xl border border-gray-200 bg-white p-5 shadow-sm">
+                    <div class="mb-2 flex items-center justify-between">
+                        <span class="text-sm text-gray-600">Total Revenus</span>
+                        <span class="whitespace-nowrap rounded-full bg-gray-100 px-2 py-1 text-xs text-gray-600">Aujourd'hui</span>
+                    </div>
+                    <div class="mb-4 h-px bg-gray-200"></div>
+                    <div class="mb-4 flex items-center justify-between">
+                        <span class="truncate text-xl font-bold text-gray-800 sm:text-2xl">{{ number_format($todayRevenue, 2) }} DH</span>
+                        <span class="flex flex-shrink-0 items-center text-sm text-green-700"><i class="mr-1 fas fa-arrow-up"></i>2.5%</span>
+                    </div>
+                    <div class="flex items-center justify-between">
+                        <span class="truncate text-sm text-gray-600">{{ number_format($monthlyRevenue, 2) }} DH</span>
+                        <span class="whitespace-nowrap rounded-full bg-gray-100 px-2 py-1 text-xs text-gray-600">ce-mois-ci</span>
+                    </div>
                 </div>
             </div>
 
-            <div class="p-6 w-full bg-white rounded-lg shadow lg:w-1/2 min-w-0">
-                <div class="flex flex-wrap gap-2 justify-between items-center mb-6">
-                    <h2 class="font-medium text-gray-700">Evolutions des commandes</h2>
-                    <div class="flex gap-2">
-                        <button class="px-4 py-1 text-sm text-gray-600 rounded-full">jours</button>
-                        <button class="px-4 py-1 text-sm text-gray-600 rounded-full">mois</button>
-                        <button class="px-4 py-1 text-sm text-white bg-black rounded-full">Années</button>
+            <div class="flex flex-col gap-6 lg:flex-row">
+                <div class="min-w-0 w-full rounded-2xl border border-gray-200 bg-white p-6 shadow-sm lg:w-1/2">
+                    <h2 class="mb-6 font-semibold text-gray-700">Répartition des revenus par ville</h2>
+                    <div class="flex flex-col items-center justify-center">
+                        <div class="relative h-40 w-40 sm:h-48 sm:w-48">
+                            @if (count($revenusParVille ?? []) > 0)
+                                <canvas id="doughnutChart" width="192" height="192"></canvas>
+                                <div class="pointer-events-none absolute inset-0 flex flex-col items-center justify-center">
+                                    <span class="text-xs text-gray-500 sm:text-sm">Total Revenus</span>
+                                    <span class="text-lg font-bold text-gray-800 sm:text-2xl">{{ number_format(collect($revenusParVille)->sum('total'), 0) }} DH</span>
+                                </div>
+                            @else
+                                <div class="flex h-full w-full items-center justify-center rounded-full border-2 border-gray-100 text-center text-sm text-gray-400">Aucune donnée pour l'instant</div>
+                            @endif
+                        </div>
+
+                        @if (count($revenusParVille ?? []) > 0)
+                            <div class="mt-6 flex w-full flex-wrap items-center justify-center gap-x-6 gap-y-2">
+                                @foreach ($revenusParVille as $index => $item)
+                                    <div class="flex items-center">
+                                        <span class="mr-2 inline-block h-3 w-3 flex-shrink-0 rounded-full" style="background-color: {{ ['#000000', '#4B5563', '#9CA3AF', '#D1D5DB', '#111827', '#6B7280'][$index % 6] }}"></span>
+                                        <span class="mr-1 max-w-[120px] truncate text-sm text-gray-600">{{ $item->ville }}</span>
+                                    </div>
+                                @endforeach
+                            </div>
+                        @endif
                     </div>
                 </div>
-                <div class="h-56 sm:h-64">
-                    <canvas id="lineChart"></canvas>
+
+                <div class="min-w-0 w-full rounded-2xl border border-gray-200 bg-white p-6 shadow-sm lg:w-1/2">
+                    <div class="mb-6 flex flex-wrap items-center justify-between gap-2">
+                        <h2 class="font-semibold text-gray-700">Évolutions des commandes</h2>
+                        <div class="flex gap-2">
+                            <button class="rounded-full px-4 py-1 text-sm text-gray-600">jours</button>
+                            <button class="rounded-full px-4 py-1 text-sm text-gray-600">mois</button>
+                            <button class="rounded-full bg-black px-4 py-1 text-sm text-white">Années</button>
+                        </div>
+                    </div>
+                    <div class="h-56 sm:h-64">
+                        <canvas id="lineChart"></canvas>
+                    </div>
                 </div>
             </div>
         </div>
-    @endsection
+    </div>
+@endsection
 
     @section('toast')
         @if (session('success'))

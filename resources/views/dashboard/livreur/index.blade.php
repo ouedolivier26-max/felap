@@ -1,31 +1,26 @@
 @extends('layout.master')
 @section('main')
-    <div class="overflow-auto flex-1 px-5 main-content">
-        <header class="flex justify-between items-center p-4 mt-2">
+    <div class="main-content flex-1 overflow-auto px-5">
+        <header class="mt-2 flex flex-col gap-4 rounded-2xl border border-gray-200 bg-white p-5 shadow-sm sm:flex-row sm:items-center sm:justify-between">
             <div>
                 <h1 class="text-3xl font-bold text-gray-800">Tableau de bord</h1>
-                <p class="px-1 py-2 text-sm text-gray-500"> {{ \Carbon\Carbon::now()->format('D, d M, Y, h:i A') }}</p>
+                <p class="px-1 py-2 text-sm text-gray-500">{{ \Carbon\Carbon::now()->format('D, d M, Y, h:i A') }}</p>
             </div>
 
-            <div class="flex items-center space-x-4">
+            <div class="flex items-center gap-4">
                 <div class="relative">
-                    <button id="notificationButton" class="relative p-2 text-gray-500 hover:text-gray-700"
+                    <button id="notificationButton" class="relative rounded-full p-2 text-gray-500 transition hover:bg-gray-100 hover:text-gray-700"
                         onclick="toggleNotificationModal()">
                         <i class="text-xl fas fa-bell"></i>
                         @if ($notifications && $notifications->count() > 0)
-                            <span
-                                class="absolute top-0 right-0 flex h-4 w-4 items-center justify-center rounded-full bg-red-500 text-[10px] text-white">{{ $notifications->count() }}</span>
+                            <span class="absolute right-0 top-0 flex h-4 w-4 items-center justify-center rounded-full bg-red-500 text-[10px] text-white">{{ $notifications->count() }}</span>
                         @endif
                     </button>
-                    {{-- ----------------------------------- modal notifications -------------------------------- --}}
-                    <div id="notificationModal"
-                        class="overflow-hidden absolute right-0 z-50 mt-2 w-80 bg-white rounded-md shadow-lg"
-                        style="max-height: 400px; overflow-y: auto;">
-                        <div class="px-3 py-2 bg-gray-100 border-b border-gray-200">
-                            <div class="flex justify-between items-center">
+                    <div id="notificationModal" class="absolute right-0 z-50 mt-2 w-80 overflow-hidden rounded-2xl border border-gray-200 bg-white shadow-lg" style="max-height: 400px; overflow-y: auto;">
+                        <div class="border-b border-gray-200 bg-gray-50 px-3 py-2">
+                            <div class="flex items-center justify-between">
                                 <h3 class="text-sm font-semibold text-gray-800">Notifications</h3>
-                                <a href="{{ route('livreur.notifications') }}"
-                                    class="text-xs font-medium text-gray-700 hover:text-black">Voir tout</a>
+                                <a href="{{ route('livreur.notifications') }}" class="text-xs font-medium text-gray-700 hover:text-black">Voir tout</a>
                             </div>
                         </div>
                         <div class="divide-y divide-gray-100">
@@ -33,11 +28,10 @@
                                 @foreach ($notifications as $notification)
                                     <div class="px-4 py-3 transition duration-150 ease-in-out hover:bg-gray-50">
                                         <div class="flex items-start">
-                                            <div class="flex-1 min-w-0">
+                                            <div class="min-w-0 flex-1">
                                                 <p class="text-sm font-medium text-gray-900">{{ $notification->titre }}</p>
-                                                <p class="text-xs text-gray-500 truncate">{{ $notification->message }}</p>
-                                                <p class="mt-1 text-xs text-gray-400">
-                                                    {{ $notification->created_at->diffForHumans() }}</p>
+                                                <p class="truncate text-xs text-gray-500">{{ $notification->message }}</p>
+                                                <p class="mt-1 text-xs text-gray-400">{{ $notification->created_at->diffForHumans() }}</p>
                                             </div>
                                         </div>
                                     </div>
@@ -49,11 +43,10 @@
                             @endif
                         </div>
                         @if ($notifications && $notifications->count() > 0)
-                            <div class="p-2 bg-gray-50 border-t border-gray-100">
+                            <div class="border-t border-gray-100 bg-gray-50 p-2">
                                 <form action="{{ route('livreur.notifications.all-lu') }}" method="POST">
                                     @csrf
-                                    <button type="submit"
-                                        class="px-3 py-2 w-full text-xs font-medium text-center bg-gradient-to-b from-gray-100 to-gray-200 rounded border border-gray-200 text-gray-950 hover:from-gray-200 hover:to-gray-300">
+                                    <button type="submit" class="w-full rounded-xl border border-gray-200 bg-white px-3 py-2 text-center text-xs font-medium text-gray-800 transition hover:bg-gray-100">
                                         Tout marquer comme lu
                                     </button>
                                 </form>
@@ -62,186 +55,149 @@
                     </div>
                 </div>
 
-                <div class="flex gap-3 items-center">
+                <div class="flex items-center gap-3">
                     <div class="hidden text-right sm:block">
-                        <p class="text-sm font-medium">{{ $user->name }}</p>
+                        <p class="text-sm font-medium text-gray-800">{{ $user->name }}</p>
                         <p class="text-xs text-gray-500">Livreur</p>
                     </div>
-                    <div class="overflow-hidden w-10 h-10 bg-gray-200 rounded-full">
-                        <img src="{{ asset('storage/' . $user->photo) }}" alt="profile" />
+                    <div class="h-10 w-10 overflow-hidden rounded-full bg-gray-200">
+                        <img src="{{ asset('storage/' . $user->photo) }}" alt="profile" class="h-full w-full object-cover" />
                     </div>
                 </div>
             </div>
         </header>
-        {{--  --------------------------------  Statistique --------------------------------- --}}
-        <div class="grid grid-cols-1 gap-4 my-6 mt-6 mb-10 md:grid-cols-2 lg:grid-cols-4 md:gap-6">
-            <div class="p-5 bg-white rounded-lg shadow-sm">
-                <div class="flex justify-between items-center mb-2">
+
+        <div class="mb-10 mt-6 grid grid-cols-1 gap-4 md:grid-cols-2 md:gap-6 lg:grid-cols-4">
+            <div class="rounded-2xl border border-gray-200 bg-white p-5 shadow-sm">
+                <div class="mb-2 flex items-center justify-between">
                     <span class="text-sm text-gray-600">Total Revenus</span>
-                    <span class="px-2 py-1 text-xs bg-gray-100 rounded">Aujourd'hui</span>
+                    <span class="rounded-full bg-gray-100 px-2 py-1 text-xs text-gray-600">Aujourd'hui</span>
                 </div>
                 <div class="mb-4 h-px bg-gray-200"></div>
-                <div class="flex justify-between items-center mb-4">
-                    <span class="text-2xl font-bold">{{ number_format($todayRevenue, 2) }} DH</span>
+                <div class="mb-4 flex items-center justify-between">
+                    <span class="text-2xl font-bold text-gray-800">{{ number_format($todayRevenue, 2) }} DH</span>
                 </div>
-                <div class="flex justify-between items-center">
+                <div class="flex items-center justify-between">
                     <span class="text-sm text-gray-600">{{ number_format($monthlyRevenue, 2) }} DH</span>
-                    <span class="px-2 py-1 text-xs bg-gray-100 rounded">ce-mois-ci</span>
+                    <span class="rounded-full bg-gray-100 px-2 py-1 text-xs text-gray-600">ce-mois-ci</span>
                 </div>
             </div>
 
-            <div class="p-5 bg-white rounded-lg shadow-sm">
-                <div class="flex justify-between items-center mb-2">
+            <div class="rounded-2xl border border-gray-200 bg-white p-5 shadow-sm">
+                <div class="mb-2 flex items-center justify-between">
                     <span class="text-sm text-gray-600">Total Colie livré</span>
-                    <span class="px-2 py-1 text-xs bg-gray-100 rounded">Aujourd'hui</span>
+                    <span class="rounded-full bg-gray-100 px-2 py-1 text-xs text-gray-600">Aujourd'hui</span>
                 </div>
                 <div class="mb-4 h-px bg-gray-200"></div>
-                <div class="flex justify-between items-center mb-4">
-                    <span class="text-2xl font-bold">{{ $todayDeliveredColis }} colie</span>
+                <div class="mb-4 flex items-center justify-between">
+                    <span class="text-2xl font-bold text-gray-800">{{ $todayDeliveredColis }} colie</span>
                 </div>
-                <div class="flex justify-between items-center">
+                <div class="flex items-center justify-between">
                     <span class="text-sm text-gray-600">{{ $monthlyDeliveredColis }} colie</span>
-                    <span class="px-2 py-1 text-xs bg-gray-100 rounded">ce-mois-ci</span>
+                    <span class="rounded-full bg-gray-100 px-2 py-1 text-xs text-gray-600">ce-mois-ci</span>
                 </div>
             </div>
 
-            <div class="p-5 bg-white rounded-lg shadow-sm">
-                <div class="flex justify-between items-center mb-2">
+            <div class="rounded-2xl border border-gray-200 bg-white p-5 shadow-sm">
+                <div class="mb-2 flex items-center justify-between">
                     <span class="text-sm text-gray-600">Total Colie en livraison</span>
-                    <span class="px-2 py-1 text-xs bg-gray-100 rounded">Aujourd'hui</span>
+                    <span class="rounded-full bg-gray-100 px-2 py-1 text-xs text-gray-600">Aujourd'hui</span>
                 </div>
                 <div class="mb-4 h-px bg-gray-200"></div>
-                <div class="flex justify-between items-center mb-4">
-                    <span class="text-2xl font-bold">{{ $todayColisInDelivery }} colie</span>
+                <div class="mb-4 flex items-center justify-between">
+                    <span class="text-2xl font-bold text-gray-800">{{ $todayColisInDelivery }} colie</span>
                 </div>
-                <div class="flex justify-between items-center">
+                <div class="flex items-center justify-between">
                     <span class="text-sm text-gray-600">{{ $monthlyColisInDelivery }} colie</span>
-                    <span class="px-2 py-1 text-xs bg-gray-100 rounded">ce-mois-ci</span>
+                    <span class="rounded-full bg-gray-100 px-2 py-1 text-xs text-gray-600">ce-mois-ci</span>
                 </div>
             </div>
 
-            <div class="p-5 bg-white rounded-lg shadow-sm">
-                <div class="flex justify-between items-center mb-2">
+            <div class="rounded-2xl border border-gray-200 bg-white p-5 shadow-sm">
+                <div class="mb-2 flex items-center justify-between">
                     <span class="text-sm text-gray-600">Total Commande</span>
-                    <span class="px-2 py-1 text-xs bg-gray-100 rounded">Aujourd'hui</span>
+                    <span class="rounded-full bg-gray-100 px-2 py-1 text-xs text-gray-600">Aujourd'hui</span>
                 </div>
                 <div class="mb-4 h-px bg-gray-200"></div>
-                <div class="flex justify-between items-center mb-4">
-                    <span class="text-2xl font-bold">{{ $todayTotalOrders }} commande</span>
+                <div class="mb-4 flex items-center justify-between">
+                    <span class="text-2xl font-bold text-gray-800">{{ $todayTotalOrders }} commande</span>
                 </div>
-                <div class="flex justify-between items-center">
+                <div class="flex items-center justify-between">
                     <span class="text-sm text-gray-600">{{ $monthlyTotalOrders }} commande</span>
-                    <span class="px-2 py-1 text-xs bg-gray-100 rounded">ce-mois-ci</span>
+                    <span class="rounded-full bg-gray-100 px-2 py-1 text-xs text-gray-600">ce-mois-ci</span>
                 </div>
             </div>
         </div>
-        {{-- ------------------------------------- Dernière Paiements -------------------------------------- --}}
-        <div class="grid grid-cols-1 gap-4 mb-6 lg:grid-cols-2 md:gap-6">
-            <div class="bg-white rounded-lg shadow-sm lg:col-span-1">
+
+        <div class="mb-6 grid grid-cols-1 gap-4 md:gap-6 lg:grid-cols-2">
+            <div class="rounded-2xl border border-gray-200 bg-white shadow-sm lg:col-span-1">
                 <div class="p-4 md:p-6">
-                    <div class="flex justify-between items-center mb-4 md:mb-6">
-                        <h3 class="text-base font-medium text-gray-700 md:text-lg">Paiements Récents</h3>
-                        <a href="{{ route('livreur.paiements') }}"
-                            class="text-xs text-gray-500 md:text-sm hover:text-gray-700">View all</a>
+                    <div class="mb-4 flex items-center justify-between md:mb-6">
+                        <h3 class="text-base font-semibold text-gray-700 md:text-lg">Paiements Récents</h3>
+                        <a href="{{ route('livreur.paiements') }}" class="text-xs text-gray-500 transition hover:text-gray-700 md:text-sm">Voir tout</a>
                     </div>
                     <div class="overflow-x-auto">
                         <table class="min-w-full divide-y divide-gray-200">
-                            <thead class="bg-[#f5f5f566]">
+                            <thead class="bg-gray-50">
                                 <tr>
-                                    <th scope="col"
-                                        class="px-3 py-3 text-xs font-medium tracking-wider text-left text-gray-500 uppercase">
-                                        Command ID</th>
-                                    <th scope="col"
-                                        class="px-3 py-3 text-xs font-medium tracking-wider text-left text-gray-500 uppercase">
-                                        Date</th>
-                                    <th scope="col"
-                                        class="px-3 py-3 text-xs font-medium tracking-wider text-right text-gray-500 uppercase">
-                                        Montant</th>
+                                    <th scope="col" class="px-3 py-3 text-left text-xs font-medium uppercase tracking-wider text-gray-500">Command ID</th>
+                                    <th scope="col" class="px-3 py-3 text-left text-xs font-medium uppercase tracking-wider text-gray-500">Date</th>
+                                    <th scope="col" class="px-3 py-3 text-right text-xs font-medium uppercase tracking-wider text-gray-500">Montant</th>
                                 </tr>
                             </thead>
-                            <tbody class="bg-white divide-y divide-gray-200">
+                            <tbody class="divide-y divide-gray-200 bg-white">
                                 @foreach ($paiements as $paiement)
                                     <tr>
-                                        <td class="px-3 py-4 text-xs font-medium text-gray-900 whitespace-nowrap"><span
-                                                class="px-2 py-1 bg-gray-100 rounded">{{ $paiement->colis->colie_number }}</span>
-                                        </td>
-                                        <td class="px-3 py-4 text-xs text-gray-500 whitespace-nowrap">
-                                            {{ \Carbon\Carbon::parse($paiement->date_paiement)->format('M d, Y \a\t H:i') }}
-                                        </td>
-                                        <td class="px-3 py-4 text-xs text-right text-green-700 whitespace-nowrap">+
-                                            {{ $paiement->montant }} dh</td>
+                                        <td class="whitespace-nowrap px-3 py-4 text-xs font-medium text-gray-900"><span class="rounded bg-gray-100 px-2 py-1">{{ $paiement->colis->colie_number }}</span></td>
+                                        <td class="whitespace-nowrap px-3 py-4 text-xs text-gray-500">{{ \Carbon\Carbon::parse($paiement->date_paiement)->format('M d, Y \a\t H:i') }}</td>
+                                        <td class="whitespace-nowrap px-3 py-4 text-right text-xs font-medium text-green-700">+ {{ $paiement->montant }} dh</td>
                                     </tr>
                                 @endforeach
-
-                                <tr>
-                                    <td class="px-3 py-4 text-xs font-medium text-gray-900 whitespace-nowrap"><span
-                                            class="px-2 py-1 bg-gray-100 rounded">BD54822D</span></td>
-                                    <td class="px-3 py-4 text-xs text-gray-500 whitespace-nowrap">Mar 14, 2025 at 08:10
-                                    </td>
-                                    <td class="px-3 py-4 text-xs text-right text-green-700 whitespace-nowrap">+ 249.50 dh
-                                    </td>
-                                </tr>
                             </tbody>
                         </table>
                     </div>
                 </div>
             </div>
-            {{-- ----------------------------------- Dernière Commandes ---------------------------------- --}}
-            <div class="bg-white rounded-lg shadow-sm lg:col-span-1">
+
+            <div class="rounded-2xl border border-gray-200 bg-white shadow-sm lg:col-span-1">
                 <div class="p-4 md:p-6">
-                    <div class="flex justify-between items-center mb-4 md:mb-6">
-                        <h3 class="text-base font-medium text-gray-700 md:text-lg">Commandes Récents</h3>
-                        <a href="{{ route('livreur.commandes') }}"
-                            class="text-xs text-gray-500 md:text-sm hover:text-gray-700">View all</a>
+                    <div class="mb-4 flex items-center justify-between md:mb-6">
+                        <h3 class="text-base font-semibold text-gray-700 md:text-lg">Commandes Récents</h3>
+                        <a href="{{ route('livreur.commandes') }}" class="text-xs text-gray-500 transition hover:text-gray-700 md:text-sm">Voir tout</a>
                     </div>
                     <div class="overflow-x-auto">
                         <table class="min-w-full divide-y divide-gray-200">
-                            <thead class="bg-[#f5f5f566]">
+                            <thead class="bg-gray-50">
                                 <tr>
-                                    <th scope="col"
-                                        class="px-3 py-3 text-xs font-medium tracking-wider text-left text-gray-500 uppercase">
-                                        Command ID</th>
-                                    <th scope="col"
-                                        class="px-3 py-3 text-xs font-medium tracking-wider text-left text-gray-500 uppercase">
-                                        Date</th>
-                                    <th scope="col"
-                                        class="hidden px-3 py-3 text-xs font-medium tracking-wider text-left text-gray-500 uppercase sm:table-cell">
-                                        Client</th>
-                                    <th scope="col"
-                                        class="hidden px-3 py-3 text-xs font-medium tracking-wider text-left text-gray-500 uppercase md:table-cell">
-                                        Status</th>
-                                    <th scope="col"
-                                        class="px-3 py-3 text-xs font-medium tracking-wider text-right text-gray-500 uppercase">
-                                        Action</th>
+                                    <th scope="col" class="px-3 py-3 text-left text-xs font-medium uppercase tracking-wider text-gray-500">Command ID</th>
+                                    <th scope="col" class="px-3 py-3 text-left text-xs font-medium uppercase tracking-wider text-gray-500">Date</th>
+                                    <th scope="col" class="hidden px-3 py-3 text-left text-xs font-medium uppercase tracking-wider text-gray-500 sm:table-cell">Client</th>
+                                    <th scope="col" class="hidden px-3 py-3 text-left text-xs font-medium uppercase tracking-wider text-gray-500 md:table-cell">Status</th>
+                                    <th scope="col" class="px-3 py-3 text-right text-xs font-medium uppercase tracking-wider text-gray-500">Action</th>
                                 </tr>
                             </thead>
-                            <tbody class="bg-white divide-y divide-gray-200">
+                            <tbody class="divide-y divide-gray-200 bg-white">
                                 @foreach ($commandes as $commande)
                                     <tr>
-                                        <td class="px-3 py-4 text-xs font-medium text-gray-900 whitespace-nowrap"><span
-                                                class="px-2 py-1 bg-gray-100 rounded">{{ $commande->commande_number }}</span>
-                                        </td>
-                                        <td class="px-3 py-4 text-xs text-gray-500 whitespace-nowrap">
-                                            {{ $commande->created_at->format('d/m/Y') }}</td>
-                                        <td class="hidden px-3 py-4 text-xs text-gray-500 whitespace-nowrap sm:table-cell">
-                                            {{ $commande->client->utilisateur->name }}</td>
-                                        <td class="hidden px-3 py-4 whitespace-nowrap md:table-cell">
+                                        <td class="whitespace-nowrap px-3 py-4 text-xs font-medium text-gray-900"><span class="rounded bg-gray-100 px-2 py-1">{{ $commande->commande_number }}</span></td>
+                                        <td class="whitespace-nowrap px-3 py-4 text-xs text-gray-500">{{ $commande->created_at->format('d/m/Y') }}</td>
+                                        <td class="hidden whitespace-nowrap px-3 py-4 text-xs text-gray-500 sm:table-cell">{{ $commande->client->utilisateur->name }}</td>
+                                        <td class="hidden whitespace-nowrap px-3 py-4 md:table-cell">
                                             <div class="flex items-center">
                                                 @if ($commande->commande_statut == 'livree')
-                                                    <span class="mr-2 w-2.5 h-2.5 bg-green-700 rounded-full"></span>
+                                                    <span class="mr-2 h-2.5 w-2.5 rounded-full bg-green-700"></span>
                                                     <span class="text-xs">Livrée</span>
                                                 @elseif($commande->commande_statut == 'en_livraison')
-                                                    <span class="mr-2 w-2.5 h-2.5 bg-yellow-700 rounded-full"></span>
+                                                    <span class="mr-2 h-2.5 w-2.5 rounded-full bg-yellow-700"></span>
                                                     <span class="text-xs">En livraison</span>
                                                 @else
-                                                    <span class="mr-2 w-2.5 h-2.5 bg-blue-900 rounded-full"></span>
+                                                    <span class="mr-2 h-2.5 w-2.5 rounded-full bg-blue-900"></span>
                                                     <span class="text-xs">En attente</span>
                                                 @endif
                                             </div>
                                         </td>
-                                        <td class="px-3 py-4 text-xs font-medium text-right whitespace-nowrap">
-                                            <button onclick="openModalDetails({{ $commande->id }})"
-                                                class="px-3 py-1 text-xs font-medium text-white bg-gradient-to-b from-gray-900 rounded to-gray-950 hover:from-gray-950 hover:to-black">Details</button>
+                                        <td class="whitespace-nowrap px-3 py-4 text-right text-xs font-medium">
+                                            <button onclick="openModalDetails({{ $commande->id }})" class="rounded-lg bg-gray-900 px-3 py-1.5 text-xs font-medium text-white transition hover:bg-black">Details</button>
                                         </td>
                                     </tr>
                                 @endforeach
@@ -368,14 +324,14 @@
                     </div>
                 @elseif($commande->livraison_statut === 'en_attente')
                     <div class="flex gap-2 justify-end p-4 mt-4 border-t">
-                        <form method="POST" action="{{ route('commandes.accepter', $commande->id) }}">
+                        <form method="POST" action="{{ route('livreur.commandes.accepter', $commande->id) }}">
                             @csrf
                             <button
                                 class="px-4 py-1.5 w-auto text-sm text-white bg-gradient-to-b from-green-700 to-green-800 rounded-md hover:from-green-800 hover:to-green-900 sm:text-base">
                                 Accepter
                             </button>
                         </form>
-                        <form method="POST" action="{{ route('commandes.refuser', $commande->id) }}">
+                        <form method="POST" action="{{ route('livreur.commandes.refuser', $commande->id) }}">
                             @csrf
                             <button
                                 class="px-4 py-1.5 w-auto text-sm text-white bg-gradient-to-b from-red-700 to-red-800 rounded-md hover:from-red-800 hover:to-red-900 sm:text-base">

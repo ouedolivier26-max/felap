@@ -1,76 +1,65 @@
 @extends('layout.master')
 @section('main')
-<div class="flex-1 overflow-auto bg-white">
-    <div class="p-4 mx-auto lg:p-8 max-w-7xl">
-        <div class="flex flex-col md:flex-row justify-between items-start md:items-center">
+<div class="flex-1 overflow-auto bg-gray-50 px-4 py-4 sm:px-6 lg:px-8">
+    <div class="mx-auto max-w-7xl rounded-2xl border border-gray-200 bg-white p-5 shadow-sm sm:p-6 lg:p-8">
+        <div class="mb-6 flex flex-col gap-4 rounded-2xl border border-gray-200 bg-gray-50 p-4 sm:flex-row sm:items-center sm:justify-between">
             <div>
-                <h1 class="text-2xl font-bold text-gray-800">Gestion de Clients</h1>
-                <p class="text-gray-600 mt-1">Gérer vos clients et leur informations</p>
+                <h1 class="text-2xl font-semibold text-gray-800">Gestion de Clients</h1>
+                <p class="mt-1 text-sm text-gray-600">Gérer vos clients et leurs informations</p>
             </div>
         </div>
-    </div>
-    <div class="border-b-2"></div>
 
-    <div class="bg-white max-w-full mx-auto lg:p-8 p-4 pt-6">
-        <div class="grid grid-cols-1 sm:grid-cols-12 gap-4 items-center mb-8">
-           {{-- -------------------- Search ------------------- --}}
-            <div class="sm:col-span-4">
-                <div class="relative flex items-center">
-                    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="currentColor" class="absolute w-5 h-5 top-2.5 left-2.5 text-gray-600">
-                        <path fill-rule="evenodd" d="M10.5 3.75a6.75 6.75 0 1 0 0 13.5 6.75 6.75 0 0 0 0-13.5ZM2.25 10.5a8.25 8.25 0 1 1 14.59 5.28l4.69 4.69a.75.75 0 1 1-1.06 1.06l-4.69-4.69A8.25 8.25 0 0 1 2.25 10.5Z" clip-rule="evenodd" />
-                    </svg>
-                    <input
-                        class="w-full bg-transparent placeholder:text-gray-400 text-gray-700 text-sm border border-gray-200 rounded-md pl-10 pr-3 py-2 transition duration-300 ease focus:outline-none focus:border-gray-400 hover:border-gray-300 shadow-sm focus:shadow"
-                        placeholder="rechercher" 
-                    />
-                </div>
+        <div class="mb-6 flex flex-col gap-3 lg:flex-row lg:items-center lg:justify-between">
+            <div class="relative w-full lg:max-w-sm">
+                <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="currentColor" class="absolute left-3 top-1/2 h-5 w-5 -translate-y-1/2 text-gray-500">
+                    <path fill-rule="evenodd" d="M10.5 3.75a6.75 6.75 0 1 0 0 13.5 6.75 6.75 0 0 0 0-13.5ZM2.25 10.5a8.25 8.25 0 1 1 14.59 5.28l4.69 4.69a.75.75 0 1 1-1.06 1.06l-4.69-4.69A8.25 8.25 0 0 1 2.25 10.5Z" clip-rule="evenodd" />
+                </svg>
+                <input class="w-full rounded-xl border border-gray-200 bg-white py-2.5 pl-10 pr-3 text-sm text-gray-700 shadow-sm outline-none transition focus:border-gray-400" placeholder="Rechercher" />
             </div>
+            <button onclick="openModalClient()" class="inline-flex items-center justify-center gap-2 rounded-xl bg-gray-900 px-4 py-2.5 text-sm font-semibold text-white transition hover:bg-black">
+                <i class="fas fa-user-plus"></i>
+                Ajouter un client
+            </button>
         </div>
-       {{-- --------------------------------------- Tableau des clients ---------------------------------------- --}}
-        <div class="bg-white rounded-lg shadow-sm border border-gray-50">
+
+        <div class="overflow-hidden rounded-2xl border border-gray-200">
             <div class="overflow-x-auto">
                 <table class="min-w-full divide-y divide-gray-200">
                     <thead class="bg-gray-50">
-                        <tr class="text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-                            <th scope="col" class="px-6 py-3">Nom CLIENT</th>
-                            <th scope="col" class="px-6 py-3 hidden sm:table-cell">TELEPHONE</th>
-                            <th scope="col" class="px-6 py-3 hidden md:table-cell">EMAIL</th>
-                            <th scope="col" class="px-6 py-3 hidden md:table-cell">VILLE</th>
-                            <th scope="col" class="px-6 py-3 hidden lg:table-cell">ADRESSE</th>
-                            <th scope="col" class="px-6 py-3 text-center">ACTIONS</th>
+                        <tr class="text-left text-xs font-medium uppercase tracking-wider text-gray-500">
+                            <th scope="col" class="px-6 py-3">Nom client</th>
+                            <th scope="col" class="hidden px-6 py-3 sm:table-cell">Téléphone</th>
+                            <th scope="col" class="hidden px-6 py-3 md:table-cell">Email</th>
+                            <th scope="col" class="hidden px-6 py-3 md:table-cell">Ville</th>
+                            <th scope="col" class="hidden px-6 py-3 lg:table-cell">Adresse</th>
+                            <th scope="col" class="px-6 py-3 text-center">Actions</th>
                         </tr>
                     </thead>
-                    <tbody class="bg-white divide-y divide-gray-200">
-                     @foreach($clients as $client)
-                        <tr>
-                            <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-700">{{ $client->utilisateur->name }}</td>
-                            <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-700 hidden sm:table-cell">{{ $client->utilisateur->phone }}</td>
-                            <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-700 hidden md:table-cell">{{ $client->utilisateur->email }}</td>
-                            <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-700 hidden md:table-cell">{{ $client->utilisateur->ville }}</td>
-                            <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-700 hidden lg:table-cell">{{ $client->utilisateur->adresse }}</td>
-                            <td class="px-6 py-4 whitespace-nowrap text-center">
-                                <div class="flex justify-center space-x-2">
-                                    <button class="px-3 py-1 bg-gradient-to-b from-red-800 to-red-900 text-white text-xs font-medium rounded hover:from-red-900 hover:to-red-950">Supprimer</button>
-                                </div>
-                            </td>
-                        </tr>
-                     @endforeach
+                    <tbody class="divide-y divide-gray-200 bg-white">
+                        @foreach($clients as $client)
+                            <tr>
+                                <td class="whitespace-nowrap px-6 py-4 text-sm text-gray-700">{{ $client->utilisateur->name }}</td>
+                                <td class="hidden whitespace-nowrap px-6 py-4 text-sm text-gray-700 sm:table-cell">{{ $client->utilisateur->phone }}</td>
+                                <td class="hidden whitespace-nowrap px-6 py-4 text-sm text-gray-700 md:table-cell">{{ $client->utilisateur->email }}</td>
+                                <td class="hidden whitespace-nowrap px-6 py-4 text-sm text-gray-700 md:table-cell">{{ $client->utilisateur->ville }}</td>
+                                <td class="hidden whitespace-nowrap px-6 py-4 text-sm text-gray-700 lg:table-cell">{{ $client->utilisateur->adresse }}</td>
+                                <td class="px-6 py-4 text-center whitespace-nowrap">
+                                    <button class="rounded-lg bg-red-600 px-3 py-1.5 text-xs font-semibold text-white transition hover:bg-red-700">Supprimer</button>
+                                </td>
+                            </tr>
+                        @endforeach
                     </tbody>
                 </table>
             </div>
-            
-            {{-- Pagination  ------------------------------------------------------------------------------ --}}
-            <div class="flex flex-col md:flex-row justify-between items-center p-6 border-t border-gray-200">
-                <div class="mb-4 md:mb-0 text-center md:text-left w-full md:w-auto">
-                    <p class="text-sm text-gray-600">Affichage de 1 à 10 sur 45 entrées</p>
-                </div>
-                
-                <div class="flex items-center justify-center md:justify-end space-x-1 w-full md:w-auto">
-                    <button class="px-2 sm:px-3 py-1 border rounded text-gray-600 hover:bg-gray-100 text-xs sm:text-sm">Précédent</button>
-                    <button class="px-2 sm:px-3 py-1 border rounded bg-gray-950 text-white text-xs sm:text-sm">1</button>
-                    <button class="px-2 sm:px-3 py-1 border rounded text-gray-600 hover:bg-gray-100 text-xs sm:text-sm">2</button>
-                    <button class="px-2 sm:px-3 py-1 border rounded text-gray-600 hover:bg-gray-100 text-xs sm:text-sm">3</button>
-                    <button class="px-2 sm:px-3 py-1 border rounded text-gray-600 hover:bg-gray-100 text-xs sm:text-sm">Suivant</button>
+
+            <div class="flex flex-col items-center justify-between gap-3 border-t border-gray-200 p-6 md:flex-row">
+                <p class="text-sm text-gray-600">Affichage de 1 à 10 sur 45 entrées</p>
+                <div class="flex items-center justify-center space-x-1 md:justify-end">
+                    <button class="rounded-lg border border-gray-200 px-2 py-1 text-xs text-gray-600 hover:bg-gray-100 sm:px-3 sm:text-sm">Précédent</button>
+                    <button class="rounded-lg bg-gray-950 px-2 py-1 text-xs text-white sm:px-3 sm:text-sm">1</button>
+                    <button class="rounded-lg border border-gray-200 px-2 py-1 text-xs text-gray-600 hover:bg-gray-100 sm:px-3 sm:text-sm">2</button>
+                    <button class="rounded-lg border border-gray-200 px-2 py-1 text-xs text-gray-600 hover:bg-gray-100 sm:px-3 sm:text-sm">3</button>
+                    <button class="rounded-lg border border-gray-200 px-2 py-1 text-xs text-gray-600 hover:bg-gray-100 sm:px-3 sm:text-sm">Suivant</button>
                 </div>
             </div>
         </div>

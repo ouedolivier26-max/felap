@@ -27,7 +27,7 @@ class CalendrierController extends Controller
             ->with(['commande.client.utilisateur'])
             ->get();
 
-        return view('dashboard.livreur.calendrier', compact('colis', 'colisLivraison'));
+        return view('dashboard.livreur.calendrie', compact('colis', 'colisLivraison'));
     }
 
     public function ajouterRendezVous(Request $request)

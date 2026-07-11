@@ -247,7 +247,7 @@
                     <p>Entrez vos identifiants pour accéder à votre compte</p>
                 </div>
 
-                <form action="{{ route('login.page') }}" method="POST">
+                <form action="{{ route('login') }}" method="POST">
                     @csrf
 
                     <div class="field">

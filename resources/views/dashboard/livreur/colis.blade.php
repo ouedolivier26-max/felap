@@ -1,112 +1,98 @@
 @extends('layout.master')
 @section('main')
-<div class="overflow-auto flex-1 bg-white">
-    <div class="p-4 mx-auto max-w-7xl lg:p-8">
-        <div class="flex flex-col justify-between items-start md:flex-row md:items-center">
+<div class="flex-1 overflow-auto bg-gray-50 px-4 py-4 sm:px-6 lg:px-8">
+    <div class="mx-auto max-w-7xl rounded-2xl border border-gray-200 bg-white p-5 shadow-sm sm:p-6 lg:p-8">
+        <div class="mb-6 flex flex-col gap-4 rounded-2xl border border-gray-200 bg-gray-50 p-4 sm:flex-row sm:items-center sm:justify-between">
             <div>
-                <h1 class="text-2xl font-bold text-gray-800">Gestion des Colis</h1>
-                <p class="mt-1 text-gray-600">Gérer vos colis et leur informations</p>
+                <h1 class="text-2xl font-semibold text-gray-800">Gestion des Colis</h1>
+                <p class="mt-1 text-sm text-gray-600">Gérer vos colis et leurs informations</p>
             </div>
-        </div>
-    </div>
-    <div class="border-b-2"></div>
-    
-    <div class="p-4 pt-6 mx-auto max-w-full bg-white lg:p-8">
-        <div class="grid grid-cols-1 gap-4 items-center mb-8 sm:grid-cols-12">
-            <div class="sm:col-span-3">
-                <select class="px-4 py-2 w-full rounded-md border border-gray-300 focus:outline-none focus:ring-1 focus:ring-gray-400">
-                    <option value="">Filtrer par mois</option>
-                    <option value="01">Janvier</option>
-                    <option value="02">Février</option>
-                    <option value="03">Mars</option>
-                    <option value="04">Avril</option>
-                    <option value="05">Mai</option>
-                    <option value="06">Juin</option>
-                    <option value="07">Juillet</option>
-                    <option value="08">Août</option>
-                    <option value="09">Septembre</option>
-                    <option value="10">Octobre</option>
-                    <option value="11">Novembre</option>
-                    <option value="12">Décembre</option>
-                </select>
-            </div>
-            
-            <div class="sm:col-span-3">
-                <select class="px-4 py-2 w-full rounded-md border border-gray-300 focus:outline-none focus:ring-1 focus:ring-gray-400">
-                    <option value="">Filtrer par status</option>
-                    <option value="en_preparation">En préparation</option>
-                    <option value="en_route">En route</option>
-                    <option value="livree">Livrée</option>
-                </select>
-            </div>
-            
-            <div class="flex justify-start sm:col-span-6 sm:justify-end">
-                <button onclick="openModalColie()" class="flex gap-2 justify-center items-center px-4 py-2 w-full text-sm font-medium text-white bg-gradient-to-b from-gray-900 rounded-md transition-colors sm:w-auto to-gray-950 hover:from-gray-950 hover:to-black">
-                 <i class="fas fa-plus"></i>
-                    Ajouter un Colis
-                </button>      
-            </div>
+            <button onclick="openModalColie()" class="inline-flex items-center justify-center gap-2 rounded-xl bg-gray-900 px-4 py-2.5 text-sm font-semibold text-white transition hover:bg-black">
+                <i class="fas fa-plus"></i>
+                Ajouter un Colis
+            </button>
         </div>
 
-        <div class="bg-white rounded-lg border border-gray-50 shadow-sm">
+        <div class="mb-6 grid gap-3 md:grid-cols-2">
+            <select class="rounded-xl border border-gray-200 bg-white px-4 py-2.5 text-sm text-gray-700 shadow-sm outline-none">
+                <option value="">Filtrer par mois</option>
+                <option value="01">Janvier</option>
+                <option value="02">Février</option>
+                <option value="03">Mars</option>
+                <option value="04">Avril</option>
+                <option value="05">Mai</option>
+                <option value="06">Juin</option>
+                <option value="07">Juillet</option>
+                <option value="08">Août</option>
+                <option value="09">Septembre</option>
+                <option value="10">Octobre</option>
+                <option value="11">Novembre</option>
+                <option value="12">Décembre</option>
+            </select>
+            <select class="rounded-xl border border-gray-200 bg-white px-4 py-2.5 text-sm text-gray-700 shadow-sm outline-none">
+                <option value="">Filtrer par statut</option>
+                <option value="en_preparation">En préparation</option>
+                <option value="en_route">En route</option>
+                <option value="livree">Livrée</option>
+            </select>
+        </div>
+
+        <div class="overflow-hidden rounded-2xl border border-gray-200">
             <div class="overflow-x-auto">
                 <table class="min-w-full divide-y divide-gray-200">
-                    <thead class="bg-[#f5f5f566]">
-                        <tr class="text-xs font-medium tracking-wider text-left text-gray-500 uppercase">
-                            <th scope="col" class="px-6 py-3">COLIS ID</th>
-                            <th scope="col" class="hidden px-6 py-3 sm:table-cell">DATE</th>
-                            <th scope="col" class="hidden px-6 py-3 md:table-cell">DESTINATION</th>
-                            <th scope="col" class="hidden px-6 py-3 md:table-cell">CLIENT</th>
-                            <th scope="col" class="px-6 py-3">STATUS</th>
-                            <th scope="col" class="px-6 py-3 text-center">ACTIONS</th>
+                    <thead class="bg-gray-50">
+                        <tr class="text-left text-xs font-medium uppercase tracking-wider text-gray-500">
+                            <th scope="col" class="px-6 py-3">Colis ID</th>
+                            <th scope="col" class="hidden px-6 py-3 sm:table-cell">Date</th>
+                            <th scope="col" class="hidden px-6 py-3 md:table-cell">Destination</th>
+                            <th scope="col" class="hidden px-6 py-3 md:table-cell">Client</th>
+                            <th scope="col" class="px-6 py-3">Status</th>
+                            <th scope="col" class="px-6 py-3 text-center">Actions</th>
                         </tr>
                     </thead>
-                    <tbody class="bg-white divide-y divide-gray-200">
+                    <tbody class="divide-y divide-gray-200 bg-white">
                         @foreach($colis as $colie)
                         <tr>
-                            <td class="px-6 py-4 whitespace-nowrap">
-                                <span class="px-2.5 py-1 text-xs font-medium text-gray-800 bg-gray-100 rounded">{{ $colie->colie_number }}</span>
+                            <td class="whitespace-nowrap px-6 py-4">
+                                <span class="rounded bg-gray-100 px-2.5 py-1 text-xs font-medium text-gray-800">{{ $colie->colie_number }}</span>
                             </td>
-                            <td class="hidden px-6 py-4 text-sm text-gray-700 whitespace-nowrap sm:table-cell">{{ $colie->created_at->format('d/m/Y') }}</td>
-                            <td class="hidden px-6 py-4 text-sm text-gray-700 whitespace-nowrap md:table-cell">{{ $colie->commande->client->utilisateur->adresse }}</td>
-                            <td class="hidden px-6 py-4 whitespace-nowrap md:table-cell">
+                            <td class="hidden whitespace-nowrap px-6 py-4 text-sm text-gray-700 sm:table-cell">{{ $colie->created_at->format('d/m/Y') }}</td>
+                            <td class="hidden whitespace-nowrap px-6 py-4 text-sm text-gray-700 md:table-cell">{{ $colie->commande->client->utilisateur->adresse }}</td>
+                            <td class="hidden whitespace-nowrap px-6 py-4 md:table-cell">
                                 <div class="text-sm text-gray-900">{{ $colie->commande->client->utilisateur->name }}</div>
                                 <div class="text-xs text-gray-500">{{ $colie->commande->client->utilisateur->phone }}</div>
                             </td>
-                            <td class="px-6 py-4 whitespace-nowrap">
-                               <div class="flex items-center">
-                                @if($colie->statut == 'en_preparation')
-                                    <span class="mr-2 w-2.5 h-2.5 bg-blue-900 rounded-full"></span>
-                                <span class="text-xs">En préparation</span>
-                                @elseif($colie->statut == 'en_route')
-                                    <span class="mr-2 w-2.5 h-2.5 bg-yellow-700 rounded-full"></span>
-                                <span class="text-xs">En route</span>
-                                @else
-                                    <span class="mr-2 w-2.5 h-2.5 bg-green-700 rounded-full"></span>
-                                <span class="text-xs">Livrée</span>
-                                @endif
-                              </div>
+                            <td class="whitespace-nowrap px-6 py-4">
+                                <div class="flex items-center">
+                                    @if($colie->statut == 'en_preparation')
+                                        <span class="mr-2 h-2.5 w-2.5 rounded-full bg-blue-900"></span>
+                                        <span class="text-xs">En préparation</span>
+                                    @elseif($colie->statut == 'en_route')
+                                        <span class="mr-2 h-2.5 w-2.5 rounded-full bg-yellow-700"></span>
+                                        <span class="text-xs">En route</span>
+                                    @else
+                                        <span class="mr-2 h-2.5 w-2.5 rounded-full bg-green-700"></span>
+                                        <span class="text-xs">Livrée</span>
+                                    @endif
+                                </div>
                             </td>
-                            <td class="px-6 py-4 text-center whitespace-nowrap">
-                                <button onclick="openModalDetails({{ $colie->id }})" class="px-4 py-1 text-xs font-medium bg-gradient-to-b from-gray-100 to-gray-200 rounded border border-gray-200 text-gray-950 hover:from-gray-200 hover:to-gray-300">Details</button>
+                            <td class="whitespace-nowrap px-6 py-4 text-center">
+                                <button onclick="openModalDetails({{ $colie->id }})" class="rounded-lg border border-gray-200 bg-gray-100 px-4 py-1.5 text-xs font-semibold text-gray-700 transition hover:bg-gray-200">Détails</button>
                             </td>
                         </tr>
                         @endforeach
                     </tbody>
                 </table>
             </div>
-            
-            <div class="flex flex-col justify-between items-center p-6 border-t border-gray-200 md:flex-row">
-                <div class="mb-4 w-full text-center md:mb-0 md:text-left md:w-auto">
-                    <p class="text-sm text-gray-600">Affichage de 1 à 10 sur 45 entrées</p>
-                </div>
-                
-                <div class="flex justify-center items-center space-x-1 w-full md:justify-end md:w-auto">
-                    <button class="px-2 py-1 text-xs text-gray-600 rounded border sm:px-3 hover:bg-gray-100 sm:text-sm">Précédent</button>
-                    <button class="px-2 py-1 text-xs text-white rounded border sm:px-3 bg-gray-950 sm:text-sm">1</button>
-                    <button class="px-2 py-1 text-xs text-gray-600 rounded border sm:px-3 hover:bg-gray-100 sm:text-sm">2</button>
-                    <button class="px-2 py-1 text-xs text-gray-600 rounded border sm:px-3 hover:bg-gray-100 sm:text-sm">3</button>
-                    <button class="px-2 py-1 text-xs text-gray-600 rounded border sm:px-3 hover:bg-gray-100 sm:text-sm">Suivant</button>
+
+            <div class="flex flex-col items-center justify-between gap-3 border-t border-gray-200 p-6 md:flex-row">
+                <p class="text-sm text-gray-600">Affichage de 1 à 10 sur 45 entrées</p>
+                <div class="flex items-center justify-center space-x-1 md:justify-end">
+                    <button class="rounded-lg border border-gray-200 px-2 py-1 text-xs text-gray-600 hover:bg-gray-100 sm:px-3 sm:text-sm">Précédent</button>
+                    <button class="rounded-lg bg-gray-950 px-2 py-1 text-xs text-white sm:px-3 sm:text-sm">1</button>
+                    <button class="rounded-lg border border-gray-200 px-2 py-1 text-xs text-gray-600 hover:bg-gray-100 sm:px-3 sm:text-sm">2</button>
+                    <button class="rounded-lg border border-gray-200 px-2 py-1 text-xs text-gray-600 hover:bg-gray-100 sm:px-3 sm:text-sm">3</button>
+                    <button class="rounded-lg border border-gray-200 px-2 py-1 text-xs text-gray-600 hover:bg-gray-100 sm:px-3 sm:text-sm">Suivant</button>
                 </div>
             </div>
         </div>
@@ -125,7 +111,7 @@
    </div>
    
    <div class="p-4 sm:p-6">
-     <form action="{{ route('colis.store') }}" method="POST">
+     <form action="{{ route('livreur.colis.store') }}" method="POST">
        @csrf
        <div class="mb-6">
          <div class="pb-2 mb-4 border-b border-gray-200">
@@ -276,7 +262,7 @@
                 @endif
            </div>
           </div>
-          <form action="{{route('colis.update-status',$colie->id)}}" method="POST">
+          <form action="{{ route('livreur.colis.update-status', $colie->id) }}" method="POST">
            @csrf
            @method('PUT')  
             <div>

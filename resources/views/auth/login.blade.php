@@ -345,7 +345,7 @@
                     <p>Entrez votre email et mot de passe pour accéder à votre compte</p>
                 </div>
 
-                <form action="{{ route('login.page') }}" method="POST">
+                <form action="{{ route('login') }}" method="POST">
                     @csrf
 
                     <div class="field">

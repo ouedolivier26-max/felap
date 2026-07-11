@@ -1,154 +1,110 @@
 @extends('layout.master')
 @section('main')
-    <div class="overflow-auto flex-1 bg-white">
-        <div class="p-4 mx-auto max-w-7xl lg:p-8">
-            <div class="flex flex-col justify-between items-start md:flex-row md:items-center">
+    <div class="flex-1 overflow-auto bg-gray-50 px-4 py-4 sm:px-6 lg:px-8">
+        <div class="mx-auto max-w-7xl rounded-2xl border border-gray-200 bg-white p-5 shadow-sm sm:p-6 lg:p-8">
+            <div class="mb-6 flex flex-col gap-4 rounded-2xl border border-gray-200 bg-gray-50 p-4 sm:flex-row sm:items-center sm:justify-between">
                 <div>
-                    <h1 class="text-2xl font-bold text-gray-800">Gestion des Commandes</h1>
-                    <p class="mt-1 text-gray-600">Gérer vos commande et leur informations</p>
+                    <h1 class="text-2xl font-semibold text-gray-800">Gestion des Commandes</h1>
+                    <p class="mt-1 text-sm text-gray-600">Gérer vos commandes et leurs informations</p>
                 </div>
             </div>
-        </div>
-        <div class="border-b-2"></div>
 
-        <div class="p-4 pt-6 mx-auto max-w-full bg-white lg:p-8">
-            <div class="grid grid-cols-1 gap-4 items-center mb-8 sm:grid-cols-2 lg:grid-cols-12">
-                {{-- -------------------- Search ------------------- --}}
-                <div class="sm:col-span-2 lg:col-span-4">
-                    <div class="flex relative items-center">
-                        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="currentColor"
-                            class="absolute top-2.5 left-2.5 w-5 h-5 text-gray-600">
-                            <path fill-rule="evenodd"
-                                d="M10.5 3.75a6.75 6.75 0 1 0 0 13.5 6.75 6.75 0 0 0 0-13.5ZM2.25 10.5a8.25 8.25 0 1 1 14.59 5.28l4.69 4.69a.75.75 0 1 1-1.06 1.06l-4.69-4.69A8.25 8.25 0 0 1 2.25 10.5Z"
-                                clip-rule="evenodd" />
-                        </svg>
-
-                        <input
-                            class="py-2 pr-3 pl-10 w-full text-sm text-gray-900 bg-transparent rounded-md border border-gray-200 shadow-sm transition duration-300 placeholder:text-gray-400 ease focus:outline-none focus:border-gray-400 hover:border-gray-300 focus:shadow"
-                            placeholder="rechercher .." />
-                    </div>
+            <div class="mb-6 grid gap-3 lg:grid-cols-[1.2fr_0.7fr_0.7fr_auto]">
+                <div class="relative">
+                    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="currentColor" class="absolute left-3 top-1/2 h-5 w-5 -translate-y-1/2 text-gray-500">
+                        <path fill-rule="evenodd" d="M10.5 3.75a6.75 6.75 0 1 0 0 13.5 6.75 6.75 0 0 0 0-13.5ZM2.25 10.5a8.25 8.25 0 1 1 14.59 5.28l4.69 4.69a.75.75 0 1 1-1.06 1.06l-4.69-4.69A8.25 8.25 0 0 1 2.25 10.5Z" clip-rule="evenodd" />
+                    </svg>
+                    <input class="w-full rounded-xl border border-gray-200 bg-white py-2.5 pl-10 pr-3 text-sm text-gray-700 shadow-sm outline-none transition focus:border-gray-400" placeholder="Rechercher .." />
                 </div>
-                {{-- -------------------- Filterages ------------------- --}}
-                <div class="sm:col-span-1 lg:col-span-2">
-                    <select
-                        class="px-4 py-2 w-full rounded-md border border-gray-300 focus:outline-none focus:ring-1 focus:ring-gray-400">
-                        <option value="">Filtrer par mois</option>
-                        <option value="01">Janvier</option>
-                        <option value="02">Février</option>
-                        <option value="03">Mars</option>
-                        <option value="04">Avril</option>
-                        <option value="05">Mai</option>
-                        <option value="06">Juin</option>
-                        <option value="07">Juillet</option>
-                        <option value="08">Août</option>
-                        <option value="09">Septembre</option>
-                        <option value="10">Octobre</option>
-                        <option value="11">Novembre</option>
-                        <option value="12">Décembre</option>
-                    </select>
-                </div>
-
-                <div class="sm:col-span-1 lg:col-span-2">
-                    <select
-                        class="px-4 py-2 w-full rounded-md border border-gray-300 focus:outline-none focus:ring-1 focus:ring-gray-400">
-                        <option value="">Filtrer par statut</option>
-                        <option value="en_cours">En cours</option>
-                        <option value="termine">Terminé</option>
-                        <option value="annule">Annulé</option>
-                    </select>
-                </div>
-                {{-- ------------------------- Ajoute d'une Commande ----------------------------- --}}
-                <div class="flex justify-start sm:col-span-4 sm:justify-end">
-                    <button onclick="openModalCommande()"
-                        class="flex gap-2 justify-center items-center px-4 py-2 w-full text-sm font-medium text-white bg-gradient-to-b to-gray-900 rounded-md transition-colors from-gray-950 sm:w-auto hover:from-gray-900 hover:to-black">
-                        <i class="fas fa-plus"></i>
-                        Nouvelle Commande
-                    </button>
-                </div>
+                <select class="rounded-xl border border-gray-200 bg-white px-4 py-2.5 text-sm text-gray-700 shadow-sm outline-none">
+                    <option value="">Filtrer par mois</option>
+                    <option value="01">Janvier</option>
+                    <option value="02">Février</option>
+                    <option value="03">Mars</option>
+                    <option value="04">Avril</option>
+                    <option value="05">Mai</option>
+                    <option value="06">Juin</option>
+                    <option value="07">Juillet</option>
+                    <option value="08">Août</option>
+                    <option value="09">Septembre</option>
+                    <option value="10">Octobre</option>
+                    <option value="11">Novembre</option>
+                    <option value="12">Décembre</option>
+                </select>
+                <select class="rounded-xl border border-gray-200 bg-white px-4 py-2.5 text-sm text-gray-700 shadow-sm outline-none">
+                    <option value="">Filtrer par statut</option>
+                    <option value="en_cours">En cours</option>
+                    <option value="termine">Terminé</option>
+                    <option value="annule">Annulé</option>
+                </select>
+                <button onclick="openModalCommande()" class="inline-flex items-center justify-center gap-2 rounded-xl bg-gray-900 px-4 py-2.5 text-sm font-semibold text-white transition hover:bg-black">
+                    <i class="fas fa-plus"></i>
+                    Nouvelle Commande
+                </button>
             </div>
-            {{-- --------------------------------------- Tableau des commandes Ajouté ---------------------------------------- --}}
-            <div class="bg-white rounded-lg border border-gray-50 shadow-sm">
+
+            <div class="overflow-hidden rounded-2xl border border-gray-200">
                 <div class="overflow-x-auto">
                     <table class="min-w-full divide-y divide-gray-200">
-                        <thead class="bg-white">
-                            <tr class="text-xs font-thin text-left text-gray-900 uppercase">
-                                <th scope="col" class="px-6 py-3">COMMANDE ID</th>
-                                <th scope="col" class="hidden px-6 py-3 sm:table-cell">DATE</th>
-                                <th scope="col" class="hidden px-6 py-3 md:table-cell">CLIENT</th>
-                                <th scope="col" class="hidden px-6 py-3 md:table-cell">PRODUIT</th>
-                                <th scope="col" class="hidden px-6 py-3 md:table-cell">QUANTITÉ</th>
-                                <th scope="col" class="hidden px-6 py-3 md:table-cell">PRIX</th>
-                                <th scope="col" class="hidden px-6 py-3 md:table-cell">MONTANT TTC</th>
-                                <th scope="col" class="px-6 py-3">STATUS</th>
-                                <th scope="col" class="px-6 py-3 text-center">ACTION</th>
+                        <thead class="bg-gray-50">
+                            <tr class="text-left text-xs font-medium uppercase tracking-wider text-gray-500">
+                                <th scope="col" class="px-6 py-3">Commande ID</th>
+                                <th scope="col" class="hidden px-6 py-3 sm:table-cell">Date</th>
+                                <th scope="col" class="hidden px-6 py-3 md:table-cell">Client</th>
+                                <th scope="col" class="hidden px-6 py-3 md:table-cell">Produit</th>
+                                <th scope="col" class="hidden px-6 py-3 md:table-cell">Quantité</th>
+                                <th scope="col" class="hidden px-6 py-3 md:table-cell">Prix</th>
+                                <th scope="col" class="hidden px-6 py-3 md:table-cell">Montant TTC</th>
+                                <th scope="col" class="px-6 py-3">Status</th>
+                                <th scope="col" class="px-6 py-3 text-center">Action</th>
                             </tr>
                         </thead>
-                        <tbody class="bg-white divide-y divide-gray-200">
+                        <tbody class="divide-y divide-gray-200 bg-white">
                             @foreach ($commandes as $commande)
                                 <tr>
-                                    <td class="px-6 py-4 whitespace-nowrap">
-                                        <span
-                                            class="px-2.5 py-1 text-xs font-medium text-gray-800 bg-gray-100 rounded">{{ $commande->commande_number }}</span>
+                                    <td class="whitespace-nowrap px-6 py-4">
+                                        <span class="rounded bg-gray-100 px-2.5 py-1 text-xs font-medium text-gray-800">{{ $commande->commande_number }}</span>
                                     </td>
-                                    <td class="hidden px-6 py-4 text-sm text-gray-900 whitespace-nowrap sm:table-cell">
-                                        {{ $commande->created_at->format('d/m/Y') }}
-                                    </td>
-                                    <td class="hidden px-6 py-4 whitespace-nowrap md:table-cell">
+                                    <td class="hidden whitespace-nowrap px-6 py-4 text-sm text-gray-900 sm:table-cell">{{ $commande->created_at->format('d/m/Y') }}</td>
+                                    <td class="hidden whitespace-nowrap px-6 py-4 md:table-cell">
                                         <div class="text-sm text-gray-900">{{ $commande->client->utilisateur->name }}</div>
                                         <div class="text-xs text-gray-500">{{ $commande->client->utilisateur->phone }}</div>
                                     </td>
-                                    <td class="hidden px-6 py-4 text-sm text-gray-900 whitespace-nowrap md:table-cell">
-                                        {{ $commande->nom_produit }}
-                                    </td>
-                                    <td class="hidden px-6 py-4 text-sm text-gray-900 whitespace-nowrap md:table-cell">
-                                        {{ $commande->quantite }}
-                                    </td>
-                                    <td class="hidden px-6 py-4 text-sm text-gray-900 whitespace-nowrap md:table-cell">
-                                        {{ $commande->prix }} DH
-                                    </td>
-                                    <td class="hidden px-6 py-4 text-sm text-gray-900 whitespace-nowrap md:table-cell">
-                                        {{ $commande->total_a_payer }} DH
-                                    </td>
-                                    <td class="px-6 py-4 whitespace-nowrap">
+                                    <td class="hidden whitespace-nowrap px-6 py-4 text-sm text-gray-900 md:table-cell">{{ $commande->nom_produit }}</td>
+                                    <td class="hidden whitespace-nowrap px-6 py-4 text-sm text-gray-900 md:table-cell">{{ $commande->quantite }}</td>
+                                    <td class="hidden whitespace-nowrap px-6 py-4 text-sm text-gray-900 md:table-cell">{{ $commande->prix }} DH</td>
+                                    <td class="hidden whitespace-nowrap px-6 py-4 text-sm text-gray-900 md:table-cell">{{ $commande->total_a_payer }} DH</td>
+                                    <td class="whitespace-nowrap px-6 py-4">
                                         <div class="flex items-center">
                                             @if ($commande->commande_statut == 'livree')
-                                                <span class="mr-2 w-2.5 h-2.5 bg-green-700 rounded-full"></span>
+                                                <span class="mr-2 h-2.5 w-2.5 rounded-full bg-green-700"></span>
                                                 <span class="text-xs">Livrée</span>
                                             @elseif($commande->commande_statut == 'en_livraison')
-                                                <span class="mr-2 w-2.5 h-2.5 bg-yellow-700 rounded-full"></span>
+                                                <span class="mr-2 h-2.5 w-2.5 rounded-full bg-yellow-700"></span>
                                                 <span class="text-xs">En livraison</span>
                                             @else
-                                                <span class="mr-2 w-2.5 h-2.5 bg-blue-900 rounded-full"></span>
+                                                <span class="mr-2 h-2.5 w-2.5 rounded-full bg-blue-900"></span>
                                                 <span class="text-xs">En attente</span>
                                             @endif
                                         </div>
                                     </td>
-                                    <td class="px-6 py-4 text-center whitespace-nowrap">
-                                        <button onclick="openModalDetails({{ $commande->id }})"
-                                            class="px-4 py-1 text-xs font-medium text-gray-950 bg-gradient-to-b from-gray-100 rounded to-gray-200 hover:from-gray-200 hover:to-gray-300 border border-gray-200">Details</button>
+                                    <td class="whitespace-nowrap px-6 py-4 text-center">
+                                        <button onclick="openModalDetails({{ $commande->id }})" class="rounded-lg border border-gray-200 bg-gray-100 px-4 py-1.5 text-xs font-semibold text-gray-700 transition hover:bg-gray-200">Détails</button>
                                     </td>
                                 </tr>
                             @endforeach
                         </tbody>
                     </table>
                 </div>
-                {{-- Pagination --------------------------------------------------------------------------------------------------------- --}}
-                <div class="flex flex-col justify-between items-center p-6 border-t border-gray-200 md:flex-row">
-                    <div class="mb-4 w-full text-center md:mb-0 md:text-left md:w-auto">
-                        <p class="text-sm text-gray-600">Affichage de 1 à 10 sur 45 entrées</p>
-                    </div>
 
-                    <div class="flex justify-center items-center space-x-1 w-full md:justify-end md:w-auto">
-                        <button
-                            class="px-2 py-1 text-xs text-gray-600 rounded border sm:px-3 hover:bg-gray-100 sm:text-sm">Précédent</button>
-                        <button
-                            class="px-2 py-1 text-xs text-white rounded border bg-gray-950 sm:px-3 sm:text-sm">1</button>
-                        <button
-                            class="px-2 py-1 text-xs text-gray-600 rounded border sm:px-3 hover:bg-gray-100 sm:text-sm">2</button>
-                        <button
-                            class="px-2 py-1 text-xs text-gray-600 rounded border sm:px-3 hover:bg-gray-100 sm:text-sm">3</button>
-                        <button
-                            class="px-2 py-1 text-xs text-gray-600 rounded border sm:px-3 hover:bg-gray-100 sm:text-sm">Suivant</button>
+                <div class="flex flex-col items-center justify-between gap-3 border-t border-gray-200 p-6 md:flex-row">
+                    <p class="text-sm text-gray-600">Affichage de 1 à 10 sur 45 entrées</p>
+                    <div class="flex items-center justify-center space-x-1 md:justify-end">
+                        <button class="rounded-lg border border-gray-200 px-2 py-1 text-xs text-gray-600 hover:bg-gray-100 sm:px-3 sm:text-sm">Précédent</button>
+                        <button class="rounded-lg bg-gray-950 px-2 py-1 text-xs text-white sm:px-3 sm:text-sm">1</button>
+                        <button class="rounded-lg border border-gray-200 px-2 py-1 text-xs text-gray-600 hover:bg-gray-100 sm:px-3 sm:text-sm">2</button>
+                        <button class="rounded-lg border border-gray-200 px-2 py-1 text-xs text-gray-600 hover:bg-gray-100 sm:px-3 sm:text-sm">3</button>
+                        <button class="rounded-lg border border-gray-200 px-2 py-1 text-xs text-gray-600 hover:bg-gray-100 sm:px-3 sm:text-sm">Suivant</button>
                     </div>
                 </div>
             </div>

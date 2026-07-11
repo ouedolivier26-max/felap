@@ -1,152 +1,111 @@
 @extends('layout.master')
 @section('main')
-<div class="flex-1 overflow-auto bg-white">
-        <div class="p-4 mx-auto lg:p-8 max-w-7xl ">
-         <div class="flex flex-col md:flex-row justify-between items-start md:items-center">
-           <div>
-             <h1 class="text-2xl font-bold text-gray-800 ">Gestion des Commandes</h1>
-               <p class="text-gray-600 mt-1 ">Gérer vos commande et leur informations</p>
-           </div>
-         </div>
-       </div>
-       <div class=" border-b-2"></div>
-
-        <div class="bg-white max-w-full mx-auto lg:p-8 p-4 pt-6">
-            <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-12 gap-4 items-center mb-8">
-             {{-- ---------------------------------- Search --------------------------------- --}}
-                <div class="sm:col-span-2 lg:col-span-4">
-                    <div class="relative flex items-center">
-                        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="currentColor"
-                            class="absolute w-5 h-5 top-2.5 left-2.5 text-gray-600">
-                            <path fill-rule="evenodd"
-                                d="M10.5 3.75a6.75 6.75 0 1 0 0 13.5 6.75 6.75 0 0 0 0-13.5ZM2.25 10.5a8.25 8.25 0 1 1 14.59 5.28l4.69 4.69a.75.75 0 1 1-1.06 1.06l-4.69-4.69A8.25 8.25 0 0 1 2.25 10.5Z"
-                                clip-rule="evenodd" />
-                        </svg>
-
-                        <input
-                            class="w-full bg-transparent placeholder:text-gray-400 text-gray-900 text-sm border border-gray-200 rounded-md pl-10 pr-3 py-2 transition duration-300 ease focus:outline-none focus:border-gray-400 hover:border-gray-300 shadow-sm focus:shadow"
-                            placeholder="rechercher .." />
-                    </div>
-                </div>
-              {{-- ---------------------------------  Filtrage --------------------------------- --}}
-                <div class="sm:col-span-1 lg:col-span-2">
-                    <select
-                        class="w-full px-4 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-1 focus:ring-gray-400">
-                        <option value="">Filtrer par mois</option>
-                        <option value="01">Janvier</option>
-                        <option value="02">Février</option>
-                        <option value="03">Mars</option>
-                        <option value="04">Avril</option>
-                        <option value="05">Mai</option>
-                        <option value="06">Juin</option>
-                        <option value="07">Juillet</option>
-                        <option value="08">Août</option>
-                        <option value="09">Septembre</option>
-                        <option value="10">Octobre</option>
-                        <option value="11">Novembre</option>
-                        <option value="12">Décembre</option>
-                    </select>
-                </div>
-
-                <div class="sm:col-span-1 lg:col-span-2">
-                    <select
-                        class="w-full px-4 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-1 focus:ring-gray-400">
-                        <option value="">Filtrer par statut</option>
-                        <option value="en_cours">En cours</option>
-                        <option value="termine">Terminé</option>
-                        <option value="annule">Annulé</option>
-                    </select>
-                </div>
+<div class="flex-1 overflow-auto bg-gray-50 px-4 py-4 sm:px-6 lg:px-8">
+    <div class="mx-auto max-w-7xl rounded-2xl border border-gray-200 bg-white p-5 shadow-sm sm:p-6 lg:p-8">
+        <div class="mb-6 flex flex-col gap-4 rounded-2xl border border-gray-200 bg-gray-50 p-4 sm:flex-row sm:items-center sm:justify-between">
+            <div>
+                <h1 class="text-2xl font-semibold text-gray-800">Gestion des Commandes</h1>
+                <p class="mt-1 text-sm text-gray-600">Gérer vos commandes et leurs informations</p>
             </div>
-            {{-- ----------------------------------- Tableau des Commandes ------------------------------------ --}}
-            <div class="bg-white rounded-lg shadow-sm border border-gray-50">
-                <div class="overflow-x-auto">
-                    <table class="min-w-full divide-y divide-gray-200">
-                        <thead class="bg-white">
-                            <tr class="text-left text-xs font-thin text-gray-900 uppercase">
-                                <th scope="col" class="px-6 py-3">COMMANDE ID</th>
-                                <th scope="col" class="px-6 py-3 hidden sm:table-cell">DATE</th>
-                                <th scope="col" class="px-6 py-3 hidden md:table-cell">CLIENT</th>
-                                <th scope="col" class="px-6 py-3 hidden md:table-cell">PRODUIT</th>
-                                <th scope="col" class="px-6 py-3 hidden md:table-cell">QUANTITÉ</th>
-                                <th scope="col" class="px-6 py-3 hidden md:table-cell">PRIX</th>
-                                <th scope="col" class="px-6 py-3 hidden md:table-cell">MONTANT TTC</th>
-                                <th scope="col" class="px-6 py-3">STATUS</th>
-                                <th scope="col" class="px-6 py-3 text-center">ACTION</th>
-                            </tr>
-                        </thead>
-                        <tbody class="bg-white divide-y divide-gray-200">
-                         @foreach ($commandes as $commande)
-                         <tr>
-                             <td class="px-6 py-4 whitespace-nowrap">
-                                 <span
-                                     class="px-2.5 py-1 text-xs font-medium text-gray-800 bg-gray-100 rounded">{{ $commande->commande_number }}</span>
-                             </td>
-                             <td class="hidden px-6 py-4 text-sm text-gray-900 whitespace-nowrap sm:table-cell">
-                                 {{ $commande->created_at->format('d/m/Y') }}
-                             </td>
-                             <td class="hidden px-6 py-4 whitespace-nowrap md:table-cell">
-                                 <div class="text-sm text-gray-900">{{ $commande->client->utilisateur->name }}</div>
-                                 <div class="text-xs text-gray-500">{{ $commande->client->utilisateur->phone }}</div>
-                             </td>
-                             <td class="hidden px-6 py-4 text-sm text-gray-900 whitespace-nowrap md:table-cell">
-                                 {{ $commande->nom_produit }}
-                             </td>
-                             <td class="hidden px-6 py-4 text-sm text-gray-900 whitespace-nowrap md:table-cell">
-                                 {{ $commande->quantite }}
-                             </td>
-                             <td class="hidden px-6 py-4 text-sm text-gray-900 whitespace-nowrap md:table-cell">
-                                 {{ $commande->prix }} DH
-                             </td>
-                             <td class="hidden px-6 py-4 text-sm text-gray-900 whitespace-nowrap md:table-cell">
-                                 {{ $commande->total_a_payer }} DH
-                             </td>
-                             <td class="px-6 py-4 whitespace-nowrap">
-                                 <div class="flex items-center">
-                                     @if ($commande->commande_statut == 'livree')
-                                         <span class="mr-2 w-2.5 h-2.5 bg-green-700 rounded-full"></span>
-                                         <span class="text-xs">Livrée</span>
-                                     @elseif($commande->commande_statut == 'en_livraison')
-                                         <span class="mr-2 w-2.5 h-2.5 bg-yellow-700 rounded-full"></span>
-                                         <span class="text-xs">En livraison</span>
-                                     @else
-                                         <span class="mr-2 w-2.5 h-2.5 bg-blue-900 rounded-full"></span>
-                                         <span class="text-xs">En attente</span>
-                                     @endif
-                                 </div>
-                             </td>
-                             <td class="px-6 py-4 text-center whitespace-nowrap">
-                                 <button onclick="openModalDetails({{ $commande->id }})"
-                                     class="px-4 py-1 text-xs font-medium text-white bg-gradient-to-b from-gray-900 rounded to-gray-950 hover:from-gray-950 hover:to-black border border-gray-200">Details</button>
-                             </td>
-                         </tr>
-                         @endforeach
-                        </tbody>
-                    </table>
-                </div>
-                
-                <div class="flex flex-col md:flex-row justify-between items-center p-6 border-t border-gray-200">
-                    <div class="mb-4 md:mb-0 text-center md:text-left w-full md:w-auto">
-                        <p class="text-sm text-gray-600">Affichage de 1 à 10 sur 45 entrées</p>
-                    </div>
+        </div>
 
-                    <div class="flex items-center justify-center md:justify-end space-x-1 w-full md:w-auto">
-                        <button
-                            class="px-2 sm:px-3 py-1 border rounded text-gray-600 hover:bg-gray-100 text-xs sm:text-sm">Précédent</button>
-                        <button
-                            class="px-2 sm:px-3 py-1 border rounded bg-gray-950 text-white text-xs sm:text-sm">1</button>
-                        <button
-                            class="px-2 sm:px-3 py-1 border rounded text-gray-600 hover:bg-gray-100 text-xs sm:text-sm">2</button>
-                        <button
-                            class="px-2 sm:px-3 py-1 border rounded text-gray-600 hover:bg-gray-100 text-xs sm:text-sm">3</button>
-                        <button
-                            class="px-2 sm:px-3 py-1 border rounded text-gray-600 hover:bg-gray-100 text-xs sm:text-sm">Suivant</button>
-                    </div>
+        <div class="mb-6 grid gap-3 lg:grid-cols-[1.2fr_0.7fr_0.7fr]">
+            <div class="relative">
+                <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="currentColor" class="absolute left-3 top-1/2 h-5 w-5 -translate-y-1/2 text-gray-500">
+                    <path fill-rule="evenodd" d="M10.5 3.75a6.75 6.75 0 1 0 0 13.5 6.75 6.75 0 0 0 0-13.5ZM2.25 10.5a8.25 8.25 0 1 1 14.59 5.28l4.69 4.69a.75.75 0 1 1-1.06 1.06l-4.69-4.69A8.25 8.25 0 0 1 2.25 10.5Z" clip-rule="evenodd" />
+                </svg>
+                <input class="w-full rounded-xl border border-gray-200 bg-white py-2.5 pl-10 pr-3 text-sm text-gray-700 shadow-sm outline-none transition focus:border-gray-400" placeholder="Rechercher .." />
+            </div>
+            <select class="rounded-xl border border-gray-200 bg-white px-4 py-2.5 text-sm text-gray-700 shadow-sm outline-none">
+                <option value="">Filtrer par mois</option>
+                <option value="01">Janvier</option>
+                <option value="02">Février</option>
+                <option value="03">Mars</option>
+                <option value="04">Avril</option>
+                <option value="05">Mai</option>
+                <option value="06">Juin</option>
+                <option value="07">Juillet</option>
+                <option value="08">Août</option>
+                <option value="09">Septembre</option>
+                <option value="10">Octobre</option>
+                <option value="11">Novembre</option>
+                <option value="12">Décembre</option>
+            </select>
+            <select class="rounded-xl border border-gray-200 bg-white px-4 py-2.5 text-sm text-gray-700 shadow-sm outline-none">
+                <option value="">Filtrer par statut</option>
+                <option value="en_cours">En cours</option>
+                <option value="termine">Terminé</option>
+                <option value="annule">Annulé</option>
+            </select>
+        </div>
+
+        <div class="overflow-hidden rounded-2xl border border-gray-200">
+            <div class="overflow-x-auto">
+                <table class="min-w-full divide-y divide-gray-200">
+                    <thead class="bg-gray-50">
+                        <tr class="text-left text-xs font-medium uppercase tracking-wider text-gray-500">
+                            <th scope="col" class="px-6 py-3">Commande ID</th>
+                            <th scope="col" class="hidden px-6 py-3 sm:table-cell">Date</th>
+                            <th scope="col" class="hidden px-6 py-3 md:table-cell">Client</th>
+                            <th scope="col" class="hidden px-6 py-3 md:table-cell">Produit</th>
+                            <th scope="col" class="hidden px-6 py-3 md:table-cell">Quantité</th>
+                            <th scope="col" class="hidden px-6 py-3 md:table-cell">Prix</th>
+                            <th scope="col" class="hidden px-6 py-3 md:table-cell">Montant TTC</th>
+                            <th scope="col" class="px-6 py-3">Status</th>
+                            <th scope="col" class="px-6 py-3 text-center">Action</th>
+                        </tr>
+                    </thead>
+                    <tbody class="divide-y divide-gray-200 bg-white">
+                        @foreach ($commandes as $commande)
+                        <tr>
+                            <td class="whitespace-nowrap px-6 py-4">
+                                <span class="rounded bg-gray-100 px-2.5 py-1 text-xs font-medium text-gray-800">{{ $commande->commande_number }}</span>
+                            </td>
+                            <td class="hidden whitespace-nowrap px-6 py-4 text-sm text-gray-900 sm:table-cell">{{ $commande->created_at->format('d/m/Y') }}</td>
+                            <td class="hidden whitespace-nowrap px-6 py-4 md:table-cell">
+                                <div class="text-sm text-gray-900">{{ $commande->client->utilisateur->name }}</div>
+                                <div class="text-xs text-gray-500">{{ $commande->client->utilisateur->phone }}</div>
+                            </td>
+                            <td class="hidden whitespace-nowrap px-6 py-4 text-sm text-gray-900 md:table-cell">{{ $commande->nom_produit }}</td>
+                            <td class="hidden whitespace-nowrap px-6 py-4 text-sm text-gray-900 md:table-cell">{{ $commande->quantite }}</td>
+                            <td class="hidden whitespace-nowrap px-6 py-4 text-sm text-gray-900 md:table-cell">{{ $commande->prix }} DH</td>
+                            <td class="hidden whitespace-nowrap px-6 py-4 text-sm text-gray-900 md:table-cell">{{ $commande->total_a_payer }} DH</td>
+                            <td class="whitespace-nowrap px-6 py-4">
+                                <div class="flex items-center">
+                                    @if ($commande->commande_statut == 'livree')
+                                        <span class="mr-2 h-2.5 w-2.5 rounded-full bg-green-700"></span>
+                                        <span class="text-xs">Livrée</span>
+                                    @elseif($commande->commande_statut == 'en_livraison')
+                                        <span class="mr-2 h-2.5 w-2.5 rounded-full bg-yellow-700"></span>
+                                        <span class="text-xs">En livraison</span>
+                                    @else
+                                        <span class="mr-2 h-2.5 w-2.5 rounded-full bg-blue-900"></span>
+                                        <span class="text-xs">En attente</span>
+                                    @endif
+                                </div>
+                            </td>
+                            <td class="whitespace-nowrap px-6 py-4 text-center">
+                                <button onclick="openModalDetails({{ $commande->id }})" class="rounded-lg border border-gray-200 bg-gray-100 px-4 py-1.5 text-xs font-semibold text-gray-700 transition hover:bg-gray-200">Détails</button>
+                            </td>
+                        </tr>
+                        @endforeach
+                    </tbody>
+                </table>
+            </div>
+
+            <div class="flex flex-col items-center justify-between gap-3 border-t border-gray-200 p-6 md:flex-row">
+                <p class="text-sm text-gray-600">Affichage de 1 à 10 sur 45 entrées</p>
+                <div class="flex items-center justify-center space-x-1 md:justify-end">
+                    <button class="rounded-lg border border-gray-200 px-2 py-1 text-xs text-gray-600 hover:bg-gray-100 sm:px-3 sm:text-sm">Précédent</button>
+                    <button class="rounded-lg bg-gray-950 px-2 py-1 text-xs text-white sm:px-3 sm:text-sm">1</button>
+                    <button class="rounded-lg border border-gray-200 px-2 py-1 text-xs text-gray-600 hover:bg-gray-100 sm:px-3 sm:text-sm">2</button>
+                    <button class="rounded-lg border border-gray-200 px-2 py-1 text-xs text-gray-600 hover:bg-gray-100 sm:px-3 sm:text-sm">3</button>
+                    <button class="rounded-lg border border-gray-200 px-2 py-1 text-xs text-gray-600 hover:bg-gray-100 sm:px-3 sm:text-sm">Suivant</button>
                 </div>
             </div>
         </div>
     </div>
-
+</div>
 @endsection
 
 @section('modal')
@@ -250,13 +209,13 @@
       </div>
       @elseif($commande->livraison_statut === 'en_attente')
       <div class="flex justify-end p-4 border-t mt-4 gap-2">
-       <form method="POST" action="{{ route('commandes.accepter', $commande->id) }}">
+       <form method="POST" action="{{ route('livreur.commandes.accepter', $commande->id) }}">
           @csrf
           <button class="w-auto px-4 py-1.5 bg-gradient-to-b from-green-700 to-green-800 text-white rounded-md hover:from-green-800 hover:to-green-900 text-sm sm:text-base">
             Accepter
           </button>
       </form>
-      <form method="POST" action="{{ route('commandes.refuser', $commande->id) }}">
+      <form method="POST" action="{{ route('livreur.commandes.refuser', $commande->id) }}">
          @csrf
           <button class="w-auto px-4 py-1.5 bg-gradient-to-b from-red-700 to-red-800 text-white rounded-md hover:from-red-800 hover:to-red-900 text-sm sm:text-base">
             Refuser

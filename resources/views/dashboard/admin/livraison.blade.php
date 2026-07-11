@@ -1,119 +1,89 @@
 @extends('layout.master')
 @section('main')
-<div class="overflow-auto flex-1 bg-white">
-    <div class="p-4 mx-auto max-w-7xl lg:p-8">
-        <div class="flex flex-col justify-between items-start md:flex-row md:items-center">
+<div class="flex-1 overflow-auto bg-gray-50 px-4 py-4 sm:px-6 lg:px-8">
+    <div class="mx-auto max-w-7xl rounded-2xl border border-gray-200 bg-white p-5 shadow-sm sm:p-6 lg:p-8">
+        <div class="mb-6 flex flex-col gap-4 rounded-2xl border border-gray-200 bg-gray-50 p-4 sm:flex-row sm:items-center sm:justify-between">
             <div>
-                <h1 class="text-2xl font-bold text-gray-800">Gestion de Livraison</h1>
-                <p class="mt-1 text-gray-600">Gérer vos livreurs et leur informations</p>
+                <h1 class="text-2xl font-semibold text-gray-800">Gestion de Livraison</h1>
+                <p class="mt-1 text-sm text-gray-600">Gérer vos livreurs et leurs informations</p>
             </div>
         </div>
-    </div>
-    <div class="border-b-2"></div>
-    
-    <div class="p-4 pt-6 mx-auto max-w-full bg-white lg:p-8">
-        <div class="grid grid-cols-1 gap-4 items-center mb-8 sm:grid-cols-12">
-             {{-- -------------------- Search ------------------- --}}
-            <div class="sm:col-span-4">
-                <div class="flex relative items-center">
-                    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="currentColor" class="absolute top-2.5 left-2.5 w-5 h-5 text-gray-600">
-                        <path fill-rule="evenodd" d="M10.5 3.75a6.75 6.75 0 1 0 0 13.5 6.75 6.75 0 0 0 0-13.5ZM2.25 10.5a8.25 8.25 0 1 1 14.59 5.28l4.69 4.69a.75.75 0 1 1-1.06 1.06l-4.69-4.69A8.25 8.25 0 0 1 2.25 10.5Z" clip-rule="evenodd" />
-                    </svg>
-                    <input
-                        class="py-2 pr-3 pl-10 w-full text-sm text-gray-700 bg-transparent rounded-md border border-gray-200 shadow-sm transition duration-300 placeholder:text-gray-400 ease focus:outline-none focus:border-gray-400 hover:border-gray-300 focus:shadow"
-                        placeholder="rechercher" 
-                    />
-                </div>
+
+        <div class="mb-6 flex flex-col gap-3 lg:flex-row lg:items-center lg:justify-between">
+            <div class="relative w-full lg:max-w-sm">
+                <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="currentColor" class="absolute left-3 top-1/2 h-5 w-5 -translate-y-1/2 text-gray-500">
+                    <path fill-rule="evenodd" d="M10.5 3.75a6.75 6.75 0 1 0 0 13.5 6.75 6.75 0 0 0 0-13.5ZM2.25 10.5a8.25 8.25 0 1 1 14.59 5.28l4.69 4.69a.75.75 0 1 1-1.06 1.06l-4.69-4.69A8.25 8.25 0 0 1 2.25 10.5Z" clip-rule="evenodd" />
+                </svg>
+                <input class="w-full rounded-xl border border-gray-200 bg-white py-2.5 pl-10 pr-3 text-sm text-gray-700 shadow-sm outline-none transition focus:border-gray-400" placeholder="Rechercher" />
             </div>
-            
-           {{-- -------------------- Filtrages ------------------- --}}
-            <div class="sm:col-span-2">
-                <select class="px-4 py-2 w-full rounded-md border border-gray-300 focus:outline-none focus:ring-1 focus:ring-gray-400">
-                    <option value="">Filter par status</option>
-                    <option value="active">Active</option>
-                    <option value="suspendu">Suspendu</option>
-                </select>
-            </div>
-            
-            <div class="flex justify-start sm:col-span-6 sm:justify-end">
-             <button onclick="openModalLivreur()"
-                  class="flex gap-2 justify-center items-center px-4 py-2 w-full text-sm font-medium text-white bg-gradient-to-b to-gray-900 rounded-md transition-colors from-gray-950 sm:w-auto hover:from-gray-900 hover:to-black">
-                  <i class="fas fa-user-plus"></i>
-                  Ajouter un livreur
-              </button>
-       </div>
+            <button onclick="openModalLivreur()" class="inline-flex items-center justify-center gap-2 rounded-xl bg-gray-900 px-4 py-2.5 text-sm font-semibold text-white transition hover:bg-black">
+                <i class="fas fa-user-plus"></i>
+                Ajouter un livreur
+            </button>
         </div>
-        
-        {{-- ------------------------------------ Tableau des livreurs ---------------------------------------- --}}
-        <div class="bg-white rounded-lg border border-gray-50 shadow-sm">
+
+        <div class="overflow-hidden rounded-2xl border border-gray-200">
             <div class="overflow-x-auto">
                 <table class="min-w-full divide-y divide-gray-200">
                     <thead class="bg-gray-50">
-                        <tr class="text-xs font-medium tracking-wider text-left text-gray-500 uppercase">
-                            <th scope="col" class="px-6 py-3">NOM LIVREUR</th>
-                            <th scope="col" class="hidden px-6 py-3 sm:table-cell">TELEPHONE</th>
-                            <th scope="col" class="hidden px-6 py-3 md:table-cell">EMAIL</th>
-                            <th scope="col" class="hidden px-6 py-3 md:table-cell">VILLE</th>
-                            <th scope="col" class="hidden px-6 py-3 lg:table-cell">ADRESSE</th>
-                            <th scope="col" class="px-6 py-3">STATUS</th>
-                            <th scope="col" class="px-6 py-3 text-center">ACTIONS</th>
+                        <tr class="text-left text-xs font-medium uppercase tracking-wider text-gray-500">
+                            <th scope="col" class="px-6 py-3">Nom livreur</th>
+                            <th scope="col" class="hidden px-6 py-3 sm:table-cell">Téléphone</th>
+                            <th scope="col" class="hidden px-6 py-3 md:table-cell">Email</th>
+                            <th scope="col" class="hidden px-6 py-3 md:table-cell">Ville</th>
+                            <th scope="col" class="hidden px-6 py-3 lg:table-cell">Adresse</th>
+                            <th scope="col" class="px-6 py-3">Status</th>
+                            <th scope="col" class="px-6 py-3 text-center">Actions</th>
                         </tr>
                     </thead>
-                    <tbody class="bg-white divide-y divide-gray-200">
+                    <tbody class="divide-y divide-gray-200 bg-white">
                         @foreach ($livreurs as $livreur)
                             <tr>
-                                <td class="px-6 py-4 whitespace-nowrap">
-                                    <div class="text-sm text-gray-900">{{ $livreur->nom_livreur }}</div>
+                                <td class="whitespace-nowrap px-6 py-4">
+                                    <div class="text-sm font-medium text-gray-900">{{ $livreur->nom_livreur }}</div>
                                     <div class="text-xs text-gray-500">{{ $livreur->nom_entreprise }}</div>
                                 </td>
-                                <td class="hidden px-6 py-4 text-sm text-gray-700 whitespace-nowrap sm:table-cell">{{ $livreur->utilisateur->phone }}</td>
-                                <td class="hidden px-6 py-4 text-sm text-gray-700 whitespace-nowrap md:table-cell">{{ $livreur->utilisateur->email }}</td>
-                                <td class="hidden px-6 py-4 text-sm text-gray-700 whitespace-nowrap md:table-cell">{{ $livreur->utilisateur->ville }}</td>
-                                <td class="hidden px-6 py-4 text-sm text-gray-700 whitespace-nowrap lg:table-cell">{{ $livreur->utilisateur->adresse }}</td>
-                                <td class="px-6 py-4 whitespace-nowrap">
+                                <td class="hidden whitespace-nowrap px-6 py-4 text-sm text-gray-700 sm:table-cell">{{ $livreur->utilisateur->phone }}</td>
+                                <td class="hidden whitespace-nowrap px-6 py-4 text-sm text-gray-700 md:table-cell">{{ $livreur->utilisateur->email }}</td>
+                                <td class="hidden whitespace-nowrap px-6 py-4 text-sm text-gray-700 md:table-cell">{{ $livreur->utilisateur->ville }}</td>
+                                <td class="hidden whitespace-nowrap px-6 py-4 text-sm text-gray-700 lg:table-cell">{{ $livreur->utilisateur->adresse }}</td>
+                                <td class="whitespace-nowrap px-6 py-4">
                                     <div class="flex items-center">
                                         @if($livreur->statut == 'disponible')
-                                            <span class="mr-2 w-2.5 h-2.5 bg-green-700 rounded-full"></span>
+                                            <span class="mr-2 h-2.5 w-2.5 rounded-full bg-green-700"></span>
                                             <span class="text-sm text-gray-700">Disponible</span>
                                         @else
-                                            <span class="mr-2 w-2.5 h-2.5 bg-red-700 rounded-full"></span>
+                                            <span class="mr-2 h-2.5 w-2.5 rounded-full bg-red-700"></span>
                                             <span class="text-sm text-gray-700">Indisponible</span>
                                         @endif
                                     </div>
                                 </td>
                                 <td class="px-6 py-4 text-center whitespace-nowrap">
-                                    <div class="flex justify-end space-x-2">
-                                        <form action="{{ route('admin.livraison.delete', $livreur->id) }}" method="POST">
-                                            @csrf
-                                            @method('DELETE')
-                                            <button type="submit" class="px-3 py-1 text-xs font-medium text-white bg-gradient-to-b from-red-800 to-red-900 rounded hover:from-red-900 hover:to-red-950">Supprimer</button>
-                                        </form>
-                                    </div>
+                                    <form action="{{ route('admin.livraison.delete', $livreur->id) }}" method="POST">
+                                        @csrf
+                                        @method('DELETE')
+                                        <button type="submit" class="rounded-lg bg-red-600 px-3 py-1.5 text-xs font-semibold text-white transition hover:bg-red-700">Supprimer</button>
+                                    </form>
                                 </td>
                             </tr>
                         @endforeach
                     </tbody>
                 </table>
             </div>
-            
-            {{-- Pagination ----------------------------------------------------------------------------- --}}
-            <div class="flex flex-col justify-between items-center p-6 border-t border-gray-200 md:flex-row">
-                <div class="mb-4 w-full text-center md:mb-0 md:text-left md:w-auto">
-                    <p class="text-sm text-gray-600">Affichage de 1 à 10 sur 45 entrées</p>
-                </div>
-                
-                <div class="flex justify-center items-center space-x-1 w-full md:justify-end md:w-auto">
-                    <button class="px-2 py-1 text-xs text-gray-600 rounded border sm:px-3 hover:bg-gray-100 sm:text-sm">Précédent</button>
-                    <button class="px-2 py-1 text-xs text-white rounded border sm:px-3 bg-gray-950 sm:text-sm">1</button>
-                    <button class="px-2 py-1 text-xs text-gray-600 rounded border sm:px-3 hover:bg-gray-100 sm:text-sm">2</button>
-                    <button class="px-2 py-1 text-xs text-gray-600 rounded border sm:px-3 hover:bg-gray-100 sm:text-sm">3</button>
-                    <button class="px-2 py-1 text-xs text-gray-600 rounded border sm:px-3 hover:bg-gray-100 sm:text-sm">Suivant</button>
+
+            <div class="flex flex-col items-center justify-between gap-3 border-t border-gray-200 p-6 md:flex-row">
+                <p class="text-sm text-gray-600">Affichage de 1 à 10 sur 45 entrées</p>
+                <div class="flex items-center justify-center space-x-1 md:justify-end">
+                    <button class="rounded-lg border border-gray-200 px-2 py-1 text-xs text-gray-600 hover:bg-gray-100 sm:px-3 sm:text-sm">Précédent</button>
+                    <button class="rounded-lg bg-gray-950 px-2 py-1 text-xs text-white sm:px-3 sm:text-sm">1</button>
+                    <button class="rounded-lg border border-gray-200 px-2 py-1 text-xs text-gray-600 hover:bg-gray-100 sm:px-3 sm:text-sm">2</button>
+                    <button class="rounded-lg border border-gray-200 px-2 py-1 text-xs text-gray-600 hover:bg-gray-100 sm:px-3 sm:text-sm">3</button>
+                    <button class="rounded-lg border border-gray-200 px-2 py-1 text-xs text-gray-600 hover:bg-gray-100 sm:px-3 sm:text-sm">Suivant</button>
                 </div>
             </div>
         </div>
     </div>
 </div>
-
 @endsection
 
 @section('modal')
