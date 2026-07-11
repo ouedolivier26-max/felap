@@ -25,7 +25,7 @@ return new class extends Migration
             $table->unsignedBigInteger('id_commande');
             $table->foreign('id_commande')->references('id')->on('commandes')->onDelete('cascade');
 
-            $table->unsignedBigInteger('id_livreur')->nullable()->after('id_commande');
+            $table->unsignedBigInteger('id_livreur')->nullable();
             $table->foreign('id_livreur')->references('id')->on('livreurs')->onDelete('cascade');
 
             $table->timestamps();
