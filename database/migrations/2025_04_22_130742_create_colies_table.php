@@ -1,5 +1,4 @@
 <?php
-
 use Illuminate\Database\Migrations\Migration;
 use Illuminate\Database\Schema\Blueprint;
 use Illuminate\Support\Facades\Schema;
@@ -13,8 +12,6 @@ return new class extends Migration
     {
         Schema::create('colies', function (Blueprint $table) {
             $table->id();
-            $table->unsignedBigInteger('id_livreur')->nullable()->after('id_commande');
-            $table->foreign('id_livreur')->references('id')->on('livreurs')->onDelete('cascade');
             $table->string('colie_number', 20)->unique();
             $table->float('poids');
             $table->float('longueur');
@@ -24,8 +21,13 @@ return new class extends Migration
             $table->dateTime('date_arrivee_estime')->nullable();
             $table->enum('statut', ['en_preparation', 'en_route', 'livrée'])->default('en_preparation');
             $table->timestamp('date_creation')->useCurrent();
+
             $table->unsignedBigInteger('id_commande');
             $table->foreign('id_commande')->references('id')->on('commandes')->onDelete('cascade');
+
+            $table->unsignedBigInteger('id_livreur')->nullable()->after('id_commande');
+            $table->foreign('id_livreur')->references('id')->on('livreurs')->onDelete('cascade');
+
             $table->timestamps();
         });
     }
