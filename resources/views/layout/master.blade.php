@@ -189,5 +189,8 @@
         @yield('toast')
     </div>
 
+    {{-- Scripts spécifiques à la vue --}}
+    @yield('script')
+
 </body>
 </html>
