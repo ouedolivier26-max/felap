@@ -1,6 +1,6 @@
 <?php
 
-namespace App\Console\Commands\app\Console\Commands;
+namespace app\Console\Commands;
 
 use Illuminate\Console\Attributes\Description;
 use Illuminate\Console\Attributes\Signature;
