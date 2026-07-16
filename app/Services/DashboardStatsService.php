@@ -7,6 +7,7 @@ use App\Models\Colis;
 use App\Models\Commande;
 use Carbon\Carbon;
 use Illuminate\Support\Facades\DB;
+use InvalidArgumentException;
 
 /**
  * AdminController::index() et LivreurController::index() faisaient exactement
@@ -35,16 +36,15 @@ use Illuminate\Support\Facades\DB;
  * renseignée (comptes créés avant l'ajout de ce champ, ou via un autre flux)
  * sont exclues via whereNotNull plutôt que comptées sous une ville vide.
  *
- * AJOUT (variations % + graphique mensuel) :
+ * NOTE sur les variations % + graphique de commandes :
  * - Les 4 cartes KPI du dashboard affichaient un badge "+2.5%" codé en dur,
  *   trompeur pour l'admin. Chaque métrique "today" est maintenant comparée à
  *   la même métrique "hier", et chaque métrique "monthly" à la même période
  *   du mois précédent (du 1er au même jour relatif), pour une comparaison
  *   équitable plutôt que mois précédent complet vs mois en cours partiel.
- * - Le line chart du dashboard utilisait un tableau de valeurs statiques
- *   ([200, 300, 250, ...]). `ordersByMonth` fournit désormais le vrai nombre
- *   de commandes par mois sur les 12 derniers mois glissants, mois manquants
- *   inclus avec 0 (pas de "trous" dans le graphique).
+ * - getOrdersChart() remplace le tableau statique du line chart et alimente
+ *   les 3 boutons jours/mois/années du dashboard (AdminController::
+ *   ordersChartData, appelé en AJAX depuis dashboard.admin.index).
  */
 class DashboardStatsService
 {
@@ -66,8 +66,6 @@ class DashboardStatsService
 
         $baseColisQuery = fn () => Colis::query()
             ->when($livreurId, fn ($q) => $q->where('id_livreur', $livreurId));
-
-        // --- Valeurs "aujourd'hui" / "ce mois-ci" (inchangé) ---
 
         $todayRevenue = $baseCommandeQuery()
             ->whereDate('date_commande', $today)
@@ -106,8 +104,6 @@ class DashboardStatsService
             ->where('statut', ColisStatut::EnRoute->value)
             ->whereBetween('date_sortie_reelle', [$startOfMonth, $now])
             ->count();
-
-        // --- Valeurs "hier" / "même période le mois dernier" (comparaison) ---
 
         $yesterdayRevenue = $baseCommandeQuery()
             ->whereDate('date_commande', $yesterday)
@@ -168,8 +164,6 @@ class DashboardStatsService
                 ->limit(6)
                 ->get(),
 
-            // Variations % : null signifie "pas de donnée comparable"
-            // (période précédente à zéro) plutôt qu'un faux "+100%".
             'revenueChange' => $this->percentChange($todayRevenue, $yesterdayRevenue),
             'monthlyRevenueChange' => $this->percentChange($monthlyRevenue, $lastMonthRevenue),
             'ordersChange' => $this->percentChange($todayTotalOrders, $yesterdayTotalOrders),
@@ -179,7 +173,10 @@ class DashboardStatsService
             'inDeliveryChange' => $this->percentChange($todayColisInDelivery, $yesterdayColisInDelivery),
             'monthlyInDeliveryChange' => $this->percentChange($monthlyColisInDelivery, $lastMonthColisInDelivery),
 
-            'ordersByMonth' => $this->getOrdersByMonth($livreurId),
+            // Granularité par défaut pour le premier rendu de la page (voir
+            // AdminController::index) — évite un appel AJAX inutile au
+            // chargement initial puisque "mois" est le bouton actif par défaut.
+            'ordersByMonth' => $this->getOrdersChart('month', $livreurId),
         ];
     }
 
@@ -198,10 +195,59 @@ class DashboardStatsService
     }
 
     /**
+     * Données du line chart "Évolutions des commandes" pour l'une des 3
+     * granularités des boutons du dashboard : jour, mois, année.
+     * Retourne toujours ['labels' => [...], 'data' => [...]], mêmes
+     * longueurs, mois/jours/années sans commande inclus avec 0 (pas de
+     * "trous" qui décaleraient les labels du graphique).
+     *
+     * @throws InvalidArgumentException si la granularité n'est pas reconnue
+     */
+    public function getOrdersChart(string $granularity, ?int $livreurId = null): array
+    {
+        return match ($granularity) {
+            'day' => $this->getOrdersByDay($livreurId),
+            'month' => $this->getOrdersByMonth($livreurId),
+            'year' => $this->getOrdersByYear($livreurId),
+            default => throw new InvalidArgumentException("Granularité inconnue : {$granularity}"),
+        };
+    }
+
+    /**
+     * Nombre de commandes par jour sur les 30 derniers jours glissants
+     * (aujourd'hui inclus).
+     */
+    private function getOrdersByDay(?int $livreurId = null): array
+    {
+        $start = Carbon::today()->subDays(29);
+
+        $raw = Commande::query()
+            ->when($livreurId, fn ($q) => $q->where('id_livreur', $livreurId))
+            ->where('date_commande', '>=', $start)
+            ->select(
+                DB::raw('DATE(date_commande) as ymd'),
+                DB::raw('COUNT(*) as total')
+            )
+            ->groupBy('ymd')
+            ->pluck('total', 'ymd');
+
+        $labels = [];
+        $data = [];
+        $cursor = $start->copy();
+
+        for ($i = 0; $i < 30; $i++) {
+            $key = $cursor->format('Y-m-d');
+            $labels[] = $cursor->format('d/m');
+            $data[] = (int) ($raw[$key] ?? 0);
+            $cursor->addDay();
+        }
+
+        return ['labels' => $labels, 'data' => $data];
+    }
+
+    /**
      * Nombre de commandes par mois sur les 12 derniers mois glissants
-     * (mois courant inclus). Les mois sans commande apparaissent avec 0
-     * plutôt que d'être absents, pour ne pas casser l'alignement des labels
-     * du line chart.
+     * (mois courant inclus).
      */
     private function getOrdersByMonth(?int $livreurId = null): array
     {
@@ -226,6 +272,38 @@ class DashboardStatsService
             $labels[] = ucfirst($cursor->translatedFormat('M'));
             $data[] = (int) ($raw[$key] ?? 0);
             $cursor->addMonth();
+        }
+
+        return ['labels' => $labels, 'data' => $data];
+    }
+
+    /**
+     * Nombre de commandes par année sur les 5 dernières années glissantes
+     * (année courante incluse).
+     */
+    private function getOrdersByYear(?int $livreurId = null): array
+    {
+        $start = Carbon::now()->startOfYear()->subYears(4);
+
+        $raw = Commande::query()
+            ->when($livreurId, fn ($q) => $q->where('id_livreur', $livreurId))
+            ->where('date_commande', '>=', $start)
+            ->select(
+                DB::raw('YEAR(date_commande) as y'),
+                DB::raw('COUNT(*) as total')
+            )
+            ->groupBy('y')
+            ->pluck('total', 'y');
+
+        $labels = [];
+        $data = [];
+        $cursor = $start->copy();
+
+        for ($i = 0; $i < 5; $i++) {
+            $key = (int) $cursor->format('Y');
+            $labels[] = (string) $key;
+            $data[] = (int) ($raw[$key] ?? 0);
+            $cursor->addYear();
         }
 
         return ['labels' => $labels, 'data' => $data];
