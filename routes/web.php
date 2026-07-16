@@ -70,6 +70,9 @@ Route::middleware(['auth', 'IsAdmin'])->prefix('admin')->name('admin.')->group(f
     Route::get('/notifications', [NotificationsController::class, 'index'])->name('notifications');
     Route::post('/notifications/{notification}/lu', [NotificationsController::class, 'lireNotification'])->name('notifications.lu');
     Route::post('/notifications/all-lu', [NotificationsController::class, 'lireToutesNotifications'])->name('notifications.all-lu');
+    Route::get('/dashboard/orders-chart/{granularity}', [AdminController::class, 'ordersChartData'])
+    ->name('dashboard.orders-chart')
+    ->whereIn('granularity', ['day', 'month', 'year']);
 });
 
 /*
