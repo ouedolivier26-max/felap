@@ -6,7 +6,9 @@ use App\Enums\NotificationStatut;
 use App\Models\Client;
 use App\Models\Notification;
 use App\Services\DashboardStatsService;
+use Illuminate\Http\JsonResponse;
 use Illuminate\Support\Facades\Auth;
+use InvalidArgumentException;
 
 class AdminController extends Controller
 {
@@ -17,7 +19,6 @@ class AdminController extends Controller
     public function index()
     {
         $user = Auth::user();
-
         $notifications = Notification::where('id_utilisateur', $user->id)
             ->where('statut', NotificationStatut::NonLue->value)
             ->latest()
@@ -44,5 +45,21 @@ class AdminController extends Controller
         $clients = Client::with('utilisateur')->paginate(20);
 
         return view('dashboard.admin.clients', compact('clients'));
+    }
+
+    /**
+     * Endpoint AJAX appelé par les boutons jours/mois/années du dashboard
+     * (dashboard.admin.index). Retourne les données du line chart pour la
+     * granularité demandée.
+     */
+    public function ordersChartData(string $granularity): JsonResponse
+    {
+        try {
+            $data = $this->statsService->getOrdersChart($granularity);
+        } catch (InvalidArgumentException $e) {
+            return response()->json(['message' => $e->getMessage()], 422);
+        }
+
+        return response()->json($data);
     }
 }
