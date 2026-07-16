@@ -62,11 +62,37 @@
                             <p class="text-xs text-gray-500">Administrateur</p>
                         </div>
                         <div class="flex h-10 w-10 flex-shrink-0 items-center justify-center overflow-hidden rounded-full bg-gray-200">
-                            <img src="{{ asset('storage/' . $user->photo) }}" alt="profile" class="h-full w-full object-cover" />
+                            @if ($user->photo)
+                                <img src="{{ asset('storage/' . $user->photo) }}" alt="profile" class="h-full w-full object-cover" />
+                            @else
+                                <span class="flex h-full w-full items-center justify-center text-sm font-medium text-gray-500">
+                                    {{ strtoupper(substr($user->name, 0, 1)) }}
+                                </span>
+                            @endif
                         </div>
                     </div>
                 </div>
             </header>
+
+            {{--
+                Badge de variation % réutilisable pour les 4 cartes KPI.
+                $change est null, un float positif ou négatif (voir
+                DashboardStatsService::percentChange) :
+                - null   -> pas de période précédente comparable, badge neutre "—"
+                - >= 0   -> flèche verte vers le haut
+                - < 0    -> flèche rouge vers le bas
+            --}}
+            @php
+                $renderChangeBadge = function ($change) {
+                    if ($change === null) {
+                        return '<span class="text-sm text-gray-400">—</span>';
+                    }
+                    $isUp = $change >= 0;
+                    $colorClass = $isUp ? 'text-green-700' : 'text-red-700';
+                    $icon = $isUp ? 'up' : 'down';
+                    return '<span class="flex items-center text-sm ' . $colorClass . '"><i class="mr-1 fas fa-arrow-' . $icon . '"></i>' . number_format(abs($change), 1) . '%</span>';
+                };
+            @endphp
 
             <div class="mb-10 mt-6 grid grid-cols-1 gap-4 sm:grid-cols-2 md:gap-6 xl:grid-cols-4">
                 <div class="min-w-0 rounded-2xl border border-gray-200 bg-white p-5 shadow-sm">
@@ -77,7 +103,7 @@
                     <div class="mb-4 h-px bg-gray-200"></div>
                     <div class="mb-4 flex items-center justify-between">
                         <span class="text-2xl font-bold text-gray-800">{{ $todayDeliveredColis }}</span>
-                        <span class="flex items-center text-sm text-green-700"><i class="mr-1 fas fa-arrow-up"></i>2.5%</span>
+                        {!! $renderChangeBadge($deliveredChange) !!}
                     </div>
                     <div class="flex items-center justify-between">
                         <span class="truncate text-sm text-gray-600">{{ $monthlyDeliveredColis }} commande</span>
@@ -93,7 +119,7 @@
                     <div class="mb-4 h-px bg-gray-200"></div>
                     <div class="mb-4 flex items-center justify-between">
                         <span class="text-2xl font-bold text-gray-800">{{ $todayColisInDelivery }}</span>
-                        <span class="flex items-center text-sm text-green-700"><i class="mr-1 fas fa-arrow-up"></i>2.5%</span>
+                        {!! $renderChangeBadge($inDeliveryChange) !!}
                     </div>
                     <div class="flex items-center justify-between">
                         <span class="truncate text-sm text-gray-600">{{ $monthlyColisInDelivery }} commande</span>
@@ -109,7 +135,7 @@
                     <div class="mb-4 h-px bg-gray-200"></div>
                     <div class="mb-4 flex items-center justify-between">
                         <span class="text-2xl font-bold text-gray-800">{{ $todayTotalOrders }}</span>
-                        <span class="flex items-center text-sm text-green-700"><i class="mr-1 fas fa-arrow-up"></i>2.5%</span>
+                        {!! $renderChangeBadge($ordersChange) !!}
                     </div>
                     <div class="flex items-center justify-between">
                         <span class="truncate text-sm text-gray-600">{{ $monthlyTotalOrders }} commande</span>
@@ -125,7 +151,7 @@
                     <div class="mb-4 h-px bg-gray-200"></div>
                     <div class="mb-4 flex items-center justify-between">
                         <span class="truncate text-xl font-bold text-gray-800 sm:text-2xl">{{ number_format($todayRevenue, 2) }} DH</span>
-                        <span class="flex flex-shrink-0 items-center text-sm text-green-700"><i class="mr-1 fas fa-arrow-up"></i>2.5%</span>
+                        {!! $renderChangeBadge($revenueChange) !!}
                     </div>
                     <div class="flex items-center justify-between">
                         <span class="truncate text-sm text-gray-600">{{ number_format($monthlyRevenue, 2) }} DH</span>
@@ -166,14 +192,33 @@
                 <div class="min-w-0 w-full rounded-2xl border border-gray-200 bg-white p-6 shadow-sm lg:w-1/2">
                     <div class="mb-6 flex flex-wrap items-center justify-between gap-2">
                         <h2 class="font-semibold text-gray-700">Évolutions des commandes</h2>
-                        <div class="flex gap-2">
-                            <button class="rounded-full px-4 py-1 text-sm text-gray-600">jours</button>
-                            <button class="rounded-full px-4 py-1 text-sm text-gray-600">mois</button>
-                            <button class="rounded-full bg-black px-4 py-1 text-sm text-white">Années</button>
+                        {{--
+                            Boutons de granularité fonctionnels : data-granularity
+                            pilote l'appel AJAX en JS plus bas. "mois" est actif
+                            par défaut car c'est ce que le contrôleur charge déjà
+                            côté serveur (ordersByMonth), évitant un appel AJAX
+                            inutile au chargement initial de la page.
+                        --}}
+                        <div id="chartGranularityButtons" class="flex gap-2">
+                            <button type="button" data-granularity="day"
+                                class="granularity-btn rounded-full px-4 py-1 text-sm text-gray-600 transition hover:bg-gray-100">
+                                Jours
+                            </button>
+                            <button type="button" data-granularity="month"
+                                class="granularity-btn rounded-full bg-black px-4 py-1 text-sm text-white transition">
+                                Mois
+                            </button>
+                            <button type="button" data-granularity="year"
+                                class="granularity-btn rounded-full px-4 py-1 text-sm text-gray-600 transition hover:bg-gray-100">
+                                Années
+                            </button>
                         </div>
                     </div>
-                    <div class="h-56 sm:h-64">
+                    <div class="relative h-56 sm:h-64">
                         <canvas id="lineChart"></canvas>
+                        <div id="chartLoading" class="absolute inset-0 hidden items-center justify-center bg-white/60">
+                            <span class="text-sm text-gray-500">Chargement...</span>
+                        </div>
                     </div>
                 </div>
             </div>
@@ -236,7 +281,7 @@
             </div>
         @endif
         @if ($errors->any())
-            <div id="toast"
+            <div id="toast-validation"
                 class="flex fixed top-6 right-6 left-6 sm:left-auto z-50 items-center p-4 max-w-xs bg-white rounded-lg border border-gray-200 shadow-lg animate-fade-in">
                 <div class="flex-shrink-0">
                     <svg class="w-6 h-6 text-red-500" fill="none" stroke="currentColor" stroke-width="2"
@@ -272,6 +317,10 @@
                 modal.classList.toggle('hidden');
             }
 
+            // Bug corrigé : le toast de validation avait id="toast" (sans le
+            // préfixe "toast-"), donc il n'était jamais masqué par ce
+            // sélecteur alors que succès/erreur l'étaient. Renommé en
+            // "toast-validation" ci-dessus pour rentrer dans le sélecteur.
             setTimeout(() => {
                 document.querySelectorAll('[id^="toast-"]').forEach(el => el.style.display = 'none');
             }, 3000);
@@ -304,14 +353,19 @@
                 });
             @endif
 
+            // Données initiales fournies par DashboardStatsService::getOrdersByMonth()
+            // (12 derniers mois glissants) — évite un appel AJAX au chargement
+            // puisque le contrôleur les calcule déjà côté serveur.
+            const initialOrdersData = {!! json_encode($ordersByMonth ?? ['labels' => [], 'data' => []]) !!};
+
             const lineCtx = document.getElementById('lineChart').getContext('2d');
             const lineChart = new Chart(lineCtx, {
                 type: 'line',
                 data: {
-                    labels: ['JAN', 'FEB', 'MAR', 'APR', 'MAY', 'JUN', 'JUL', 'AUG', 'SEP', 'OCT', 'NOV', 'DEC'],
+                    labels: initialOrdersData.labels,
                     datasets: [{
                         label: 'Commandes',
-                        data: [200, 300, 250, 200, 380, 350, 450, 400, 320, 250, 220, 300],
+                        data: initialOrdersData.data,
                         borderColor: '#000000',
                         borderWidth: 1,
                         backgroundColor: 'rgba(0, 0, 0, 0.1)',
@@ -325,13 +379,12 @@
                     maintainAspectRatio: false,
                     scales: {
                         y: {
-                            min: 0,
-                            max: 500,
+                            // min/max fixes retirés : avec de vraies données,
+                            // un max codé à 500 aurait tronqué le graphique
+                            // dès qu'une période dépasse ce total.
+                            beginAtZero: true,
                             ticks: {
-                                stepSize: 100,
-                                callback: function(value) {
-                                    return value;
-                                }
+                                precision: 0
                             },
                             grid: {
                                 color: 'rgba(0, 0, 0, 0.05)'
@@ -353,6 +406,81 @@
                         }
                     }
                 }
+            });
+
+            // Bascule de granularité jours/mois/années. "mois" est déjà
+            // rendu côté serveur (voir initialOrdersData) donc on ne
+            // refait pas l'appel AJAX pour ce cas-là au premier clic.
+            //
+            // ATTENTION : nécessite côté backend une route + méthode encore
+            // à créer, ex. :
+            //   GET /admin/dashboard/orders-chart/{granularity}
+            //   -> AdminController::ordersChartData($granularity)
+            //   -> DashboardStatsService::getOrdersChart($granularity)
+            // qui renvoie du JSON { labels: [...], data: [...] }.
+            // Sans cette route, le fetch() ci-dessous renverra une 404.
+            const granularityButtons = document.querySelectorAll('.granularity-btn');
+            const chartLoading = document.getElementById('chartLoading');
+            let currentGranularity = 'month';
+            const chartCache = { month: initialOrdersData };
+
+            function setActiveButton(granularity) {
+                granularityButtons.forEach(btn => {
+                    const isActive = btn.dataset.granularity === granularity;
+                    btn.classList.toggle('bg-black', isActive);
+                    btn.classList.toggle('text-white', isActive);
+                    btn.classList.toggle('text-gray-600', !isActive);
+                    btn.classList.toggle('hover:bg-gray-100', !isActive);
+                });
+            }
+
+            async function loadGranularity(granularity) {
+                if (granularity === currentGranularity) {
+                    return;
+                }
+
+                setActiveButton(granularity);
+                currentGranularity = granularity;
+
+                if (chartCache[granularity]) {
+                    lineChart.data.labels = chartCache[granularity].labels;
+                    lineChart.data.datasets[0].data = chartCache[granularity].data;
+                    lineChart.update();
+                    return;
+                }
+
+                chartLoading.classList.remove('hidden');
+                chartLoading.classList.add('flex');
+
+                try {
+                    const response = await fetch(`{{ url('/admin/dashboard/orders-chart') }}/${granularity}`, {
+                        headers: { 'X-Requested-With': 'XMLHttpRequest' }
+                    });
+
+                    if (!response.ok) {
+                        throw new Error(`Réponse HTTP ${response.status}`);
+                    }
+
+                    const json = await response.json();
+                    chartCache[granularity] = json;
+
+                    lineChart.data.labels = json.labels;
+                    lineChart.data.datasets[0].data = json.data;
+                    lineChart.update();
+                } catch (error) {
+                    console.error('Erreur chargement du graphique :', error);
+                    // On revient sur le bouton précédent plutôt que de
+                    // laisser l'UI dans un état incohérent (bouton actif
+                    // sur une granularité dont les données n'ont pas chargé).
+                    setActiveButton(currentGranularity === granularity ? 'month' : currentGranularity);
+                } finally {
+                    chartLoading.classList.add('hidden');
+                    chartLoading.classList.remove('flex');
+                }
+            }
+
+            granularityButtons.forEach(btn => {
+                btn.addEventListener('click', () => loadGranularity(btn.dataset.granularity));
             });
         </script>
     @endsection
