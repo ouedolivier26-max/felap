@@ -87,7 +87,15 @@
 @endsection
 
 @section('modal')
-<div id="livreurModal" class="hidden fixed inset-0 z-50 justify-center items-center p-4 bg-black bg-opacity-50">
+{{--
+    Bug corrigé : le modal restait "hidden" par défaut même quand la
+    soumission précédente avait échoué la validation. L'admin remplissait
+    le formulaire, cliquait sur "Enregistrer", la page se rechargeait, le
+    modal disparaissait et le formulaire était vide — donnant l'impression
+    que "rien ne se passe". On rouvre maintenant automatiquement le modal
+    dès que $errors contient une erreur liée à ce formulaire.
+--}}
+<div id="livreurModal" class="{{ $errors->any() ? 'flex' : 'hidden' }} fixed inset-0 z-50 justify-center items-center p-4 bg-black bg-opacity-50">
  <div class="bg-white rounded-md shadow-lg w-full max-w-2xl max-h-[100vh] overflow-y-auto">
   <div class="flex justify-between items-center p-4 border-b">
     <h2 class="text-xl font-bold text-gray-800">Ajouter un livreur</h2>
@@ -97,7 +105,7 @@
   </div>
    
   <div class="px-6 py-4">
-   <form method="POST" action="{{ route('admin.livraison.store') }}">
+   <form method="POST" action="{{ route('admin.livraison.store') }}" id="livreurForm">
      @csrf
      <div class="mb-6">
        <h3 class="pb-2 mb-4 text-sm font-medium text-gray-700 uppercase border-b">INFORMATION DU LIVREUR</h3>
@@ -105,40 +113,69 @@
          <div class="space-y-4">
            <div>
              <label class="block mb-1 text-sm font-medium text-gray-700">Entreprise</label>
-             <input type="text" name="nom_entreprise" required class="px-4 py-2 w-full text-sm text-gray-600 bg-transparent rounded-md border border-gray-200 shadow-sm transition duration-300 placeholder:text-gray-400 ease focus:outline-none focus:border-gray-400 hover:border-gray-300 focus:shadow" placeholder="Nom d'entreprise">
+             <input type="text" name="nom_entreprise" value="{{ old('nom_entreprise') }}" required
+               class="px-4 py-2 w-full text-sm text-gray-600 bg-transparent rounded-md border {{ $errors->has('nom_entreprise') ? 'border-red-400' : 'border-gray-200' }} shadow-sm transition duration-300 placeholder:text-gray-400 ease focus:outline-none focus:border-gray-400 hover:border-gray-300 focus:shadow"
+               placeholder="Nom d'entreprise">
+             @error('nom_entreprise')
+               <p class="mt-1 text-xs text-red-600">{{ $message }}</p>
+             @enderror
            </div>
            
            <div>
              <label class="block mb-1 text-sm font-medium text-gray-700">Email</label>
-             <input type="email" name="email" required class="px-4 py-2 w-full text-sm text-gray-600 bg-transparent rounded-md border border-gray-200 shadow-sm transition duration-300 placeholder:text-gray-400 ease focus:outline-none focus:border-gray-400 hover:border-gray-300 focus:shadow" placeholder="email@exemple.com">
+             <input type="email" name="email" value="{{ old('email') }}" required
+               class="px-4 py-2 w-full text-sm text-gray-600 bg-transparent rounded-md border {{ $errors->has('email') ? 'border-red-400' : 'border-gray-200' }} shadow-sm transition duration-300 placeholder:text-gray-400 ease focus:outline-none focus:border-gray-400 hover:border-gray-300 focus:shadow"
+               placeholder="email@exemple.com">
+             @error('email')
+               <p class="mt-1 text-xs text-red-600">{{ $message }}</p>
+             @enderror
            </div>
            
            <div>
              <label class="block mb-1 text-sm font-medium text-gray-700">Nom Livreur</label>
-             <input type="text" name="nom_livreur" required class="px-4 py-2 w-full text-sm text-gray-600 bg-transparent rounded-md border border-gray-200 shadow-sm transition duration-300 placeholder:text-gray-400 ease focus:outline-none focus:border-gray-400 hover:border-gray-300 focus:shadow" placeholder="Nom et prénom">
+             <input type="text" name="nom_livreur" value="{{ old('nom_livreur') }}" required
+               class="px-4 py-2 w-full text-sm text-gray-600 bg-transparent rounded-md border {{ $errors->has('nom_livreur') ? 'border-red-400' : 'border-gray-200' }} shadow-sm transition duration-300 placeholder:text-gray-400 ease focus:outline-none focus:border-gray-400 hover:border-gray-300 focus:shadow"
+               placeholder="Nom et prénom">
+             @error('nom_livreur')
+               <p class="mt-1 text-xs text-red-600">{{ $message }}</p>
+             @enderror
            </div>
            
            <div>
              <label class="block mb-1 text-sm font-medium text-gray-700">Téléphone</label>
-             <input type="tel" name="phone" required class="px-4 py-2 w-full text-sm text-gray-600 bg-transparent rounded-md border border-gray-200 shadow-sm transition duration-300 placeholder:text-gray-400 ease focus:outline-none focus:border-gray-400 hover:border-gray-300 focus:shadow" placeholder="Ex: 06 12 34 56 78">
+             <input type="tel" name="phone" value="{{ old('phone') }}" required
+               class="px-4 py-2 w-full text-sm text-gray-600 bg-transparent rounded-md border {{ $errors->has('phone') ? 'border-red-400' : 'border-gray-200' }} shadow-sm transition duration-300 placeholder:text-gray-400 ease focus:outline-none focus:border-gray-400 hover:border-gray-300 focus:shadow"
+               placeholder="Ex: 06 12 34 56 78">
+             @error('phone')
+               <p class="mt-1 text-xs text-red-600">{{ $message }}</p>
+             @enderror
            </div>
            
            <div>
              <label class="block mb-1 text-sm font-medium text-gray-700">Ville</label>
-             <select name="ville" required class="px-4 py-2 w-full text-sm text-gray-600 bg-transparent rounded-md border border-gray-200 shadow-sm transition duration-300 placeholder:text-gray-400 ease focus:outline-none focus:border-gray-400 hover:border-gray-300 focus:shadow">
+             <select name="ville" required
+               class="px-4 py-2 w-full text-sm text-gray-600 bg-transparent rounded-md border {{ $errors->has('ville') ? 'border-red-400' : 'border-gray-200' }} shadow-sm transition duration-300 placeholder:text-gray-400 ease focus:outline-none focus:border-gray-400 hover:border-gray-300 focus:shadow">
                <option value="">Sélectionnez une ville</option>
-               <option value="casablanca">Casablanca</option>
-               <option value="rabat">Rabat</option>
-               <option value="marrakech">Marrakech</option>
-               <option value="fes">Fès</option>
-               <option value="tanger">Tanger</option>
-               <option value="agadir">Agadir</option>
+               <option value="casablanca" @selected(old('ville') === 'casablanca')>Casablanca</option>
+               <option value="rabat" @selected(old('ville') === 'rabat')>Rabat</option>
+               <option value="marrakech" @selected(old('ville') === 'marrakech')>Marrakech</option>
+               <option value="fes" @selected(old('ville') === 'fes')>Fès</option>
+               <option value="tanger" @selected(old('ville') === 'tanger')>Tanger</option>
+               <option value="agadir" @selected(old('ville') === 'agadir')>Agadir</option>
              </select>
+             @error('ville')
+               <p class="mt-1 text-xs text-red-600">{{ $message }}</p>
+             @enderror
            </div>
            
            <div>
              <label class="block mb-1 text-sm font-medium text-gray-700">Adresse</label>
-             <input type="text" name="adresse" required class="px-4 py-2 w-full text-sm text-gray-600 bg-transparent rounded-md border border-gray-200 shadow-sm transition duration-300 placeholder:text-gray-400 ease focus:outline-none focus:border-gray-400 hover:border-gray-300 focus:shadow" placeholder="Adresse complète">
+             <input type="text" name="adresse" value="{{ old('adresse') }}" required
+               class="px-4 py-2 w-full text-sm text-gray-600 bg-transparent rounded-md border {{ $errors->has('adresse') ? 'border-red-400' : 'border-gray-200' }} shadow-sm transition duration-300 placeholder:text-gray-400 ease focus:outline-none focus:border-gray-400 hover:border-gray-300 focus:shadow"
+               placeholder="Adresse complète">
+             @error('adresse')
+               <p class="mt-1 text-xs text-red-600">{{ $message }}</p>
+             @enderror
            </div>
 
          </div>
@@ -148,8 +185,8 @@
          <button type="button" onclick="closeModalLivreur()" class="px-4 py-2 text-gray-700 rounded-md hover:bg-gray-100">
            Annuler
          </button>
-         <button type="submit" class="px-4 py-2 text-white bg-gradient-to-b from-gray-900 rounded-md to-gray-950 hover:from-gray-950 hover:to-black">
-           Enregistrer
+         <button type="submit" id="livreurSubmitBtn" class="px-4 py-2 text-white bg-gradient-to-b from-gray-900 rounded-md to-gray-950 hover:from-gray-950 hover:to-black disabled:cursor-not-allowed disabled:opacity-60">
+           <span id="livreurSubmitLabel">Enregistrer</span>
          </button>
        </div>
      </form>
@@ -171,7 +208,7 @@
     <div class="ml-3 text-sm font-medium text-gray-900">
         {{ session('success') }}
             </div>
-    <button type="button" class="inline-flex p-1.5 -mx-1.5 -my-1.5 ml-auto w-8 h-8 text-gray-400 bg-white rounded-lg hover:text-gray-600 focus:ring-2 focus:ring-gray-100">
+    <button type="button" onclick="this.closest('#toast-success').remove()" class="inline-flex p-1.5 -mx-1.5 -my-1.5 ml-auto w-8 h-8 text-gray-400 bg-white rounded-lg hover:text-gray-600 focus:ring-2 focus:ring-gray-100">
         <span class="sr-only">Fermer</span>
         <svg class="w-5 h-5" fill="currentColor" viewBox="0 0 20 20">
             <path fill-rule="evenodd" d="M4.293 4.293a1 1 0 011.414 0L10 8.586l4.293-4.293a1 1 0 111.414 1.414L11.414 10l4.293 4.293a1 1 0 01-1.414 1.414L10 11.414l-4.293 4.293a1 1 0 01-1.414-1.414L8.586 10 4.293 5.707a1 1 0 010-1.414z" clip-rule="evenodd"/>
@@ -191,7 +228,7 @@
     <div class="ml-3 text-sm font-medium text-gray-900">
         {{ session('error') }}
     </div>
-    <button type="button" class="inline-flex p-1.5 -mx-1.5 -my-1.5 ml-auto w-8 h-8 text-gray-400 bg-white rounded-lg hover:text-gray-600 focus:ring-2 focus:ring-gray-100">
+    <button type="button" onclick="this.closest('#toast-error').remove()" class="inline-flex p-1.5 -mx-1.5 -my-1.5 ml-auto w-8 h-8 text-gray-400 bg-white rounded-lg hover:text-gray-600 focus:ring-2 focus:ring-gray-100">
         <span class="sr-only">Fermer</span>
         <svg class="w-5 h-5" fill="currentColor" viewBox="0 0 20 20">
             <path fill-rule="evenodd" d="M4.293 4.293a1 1 0 011.414 0L10 8.586l4.293-4.293a1 1 0 111.414 1.414L11.414 10l4.293 4.293a1 1 0 01-1.414 1.414L10 11.414l-4.293 4.293a1 1 0 01-1.414-1.414L8.586 10 4.293 5.707a1 1 0 010-1.414z" clip-rule="evenodd"/>
@@ -199,8 +236,14 @@
                 </button>
             </div>
 @endif
+
+{{--
+    id renommé de "toast" à "toast-validation" pour rentrer dans le
+    sélecteur [id^="toast-"] du setTimeout ci-dessous — sinon ce toast
+    ne se masquait jamais automatiquement, contrairement aux deux autres.
+--}}
 @if($errors->any())
-<div id="toast" class="flex fixed top-6 right-6 z-50 items-center p-4 max-w-xs bg-white rounded-lg border border-gray-200 shadow-lg animate-fade-in">
+<div id="toast-validation" class="flex fixed top-6 right-6 z-50 items-center p-4 max-w-xs bg-white rounded-lg border border-gray-200 shadow-lg animate-fade-in">
     <div class="flex-shrink-0">
         <svg class="w-6 h-6 text-red-500" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
             <circle cx="12" cy="12" r="10" stroke="currentColor" stroke-width="2" fill="none"/>
@@ -212,7 +255,7 @@
             <div>{{ $error }}</div>
         @endforeach
     </div>
-    <button type="button" onclick="this.parentElement.remove()" class="inline-flex p-1.5 -mx-1.5 -my-1.5 ml-auto w-8 h-8 text-gray-400 bg-white rounded-lg hover:text-gray-600 focus:ring-2 focus:ring-gray-100">
+    <button type="button" onclick="this.closest('#toast-validation').remove()" class="inline-flex p-1.5 -mx-1.5 -my-1.5 ml-auto w-8 h-8 text-gray-400 bg-white rounded-lg hover:text-gray-600 focus:ring-2 focus:ring-gray-100">
         <span class="sr-only">Fermer</span>
         <svg class="w-5 h-5" fill="currentColor" viewBox="0 0 20 20">
             <path fill-rule="evenodd" d="M4.293 4.293a1 1 0 011.414 0L10 8.586l4.293-4.293a1 1 0 111.414 1.414L11.414 10l4.293 4.293a1 1 0 01-1.414 1.414L10 11.414l-4.293 4.293a1 1 0 01-1.414-1.414L8.586 10 4.293 5.707a1 1 0 010-1.414z" clip-rule="evenodd"/>
@@ -233,6 +276,19 @@
   livreurModal.classList.remove('flex');
   livreurModal.classList.add('hidden');
  }
+
+ // Empêche les double-soumissions : un admin qui clique plusieurs fois
+ // pendant que la requête est en cours (email lent à envoyer, DB lente)
+ // ne déclenche plus qu'un seul POST.
+ const livreurForm = document.getElementById('livreurForm');
+ const livreurSubmitBtn = document.getElementById('livreurSubmitBtn');
+ const livreurSubmitLabel = document.getElementById('livreurSubmitLabel');
+
+ livreurForm.addEventListener('submit', () => {
+   livreurSubmitBtn.disabled = true;
+   livreurSubmitLabel.textContent = 'Enregistrement...';
+ });
+
  setTimeout(() => {
           document.querySelectorAll('[id^="toast-"]').forEach(el => el.style.display = 'none');
       }, 3000);    
